@@ -621,9 +621,20 @@ function handleFileSelect(e,broker){const f=e.target.files[0];if(f)parseCSV(f,br
 
 function parseCSV(file,broker){
   const reader=new FileReader();
+  // Read as ArrayBuffer so we can detect UTF-16 encoding
   reader.onload=ev=>{
     try{
-      const text=ev.target.result;
+      let text='';
+      const buf=ev.target.result;
+      const bytes=new Uint8Array(buf);
+      // Detect UTF-16 LE BOM (FF FE) — the Mac MT5 HTM export format
+      if(bytes[0]===0xFF&&bytes[1]===0xFE){
+        text=new TextDecoder('utf-16le').decode(buf);
+      } else if(bytes[0]===0xFE&&bytes[1]===0xFF){
+        text=new TextDecoder('utf-16be').decode(buf);
+      } else {
+        text=new TextDecoder('utf-8').decode(buf);
+      }
       let imported=[];
       if(broker==='mt5') imported=parseMT5(text);
       else if(broker==='bybit') imported=parseBybit(text);
@@ -634,40 +645,110 @@ function parseCSV(file,broker){
       showImportResult(broker,{error:'Could not parse file: '+err.message});
     }
   };
-  reader.readAsText(file);
+  reader.readAsArrayBuffer(file);
 }
 
 // ── MT5 Parser ────────────────────────────────
-// MT5 History CSV columns (standard export):
-// Time, Position, Symbol, Type, Volume, Price, S/L, T/P, Time (close), Price (close), Commission, Swap, Profit, Balance, Comment
+// Handles both:
+// 1. MT5 HTML Report (.htm) — Mac export, UTF-16 encoded
+//    Table columns: Time | Position | Symbol | Type | [hidden] | Volume | Entry Price | S/L | T/P | Close Time | Close Price | Commission | Swap | Profit
+// 2. MT5 CSV export (standard text format)
 function parseMT5(text){
-  const lines=text.split('\n').map(l=>l.trim()).filter(l=>l.length);
   const trades=[];
-  // find header row
+  const existingTickets=new Set(curTrades().filter(t=>t.ticket).map(t=>t.ticket));
+
+  // ── HTML path (htm report from Mac MT5) ──
+  const isHTML=text.trimStart().toLowerCase().startsWith('<!doctype')||text.trimStart().startsWith('<html')||text.includes('<table');
+  if(isHTML){
+    // Extract all <tr> blocks
+    const trMatches=[...text.matchAll(/<tr[^>]*>([\s\S]*?)<\/tr>/gi)];
+    for(const trMatch of trMatches){
+      const rowHTML=trMatch[1];
+      // Skip header rows (contain <th>) and summary rows
+      if(/<th/i.test(rowHTML))continue;
+      // Extract all <td> values, stripping tags
+      const cells=[...rowHTML.matchAll(/<td([^>]*)>([\s\S]*?)<\/td>/gi)];
+      if(cells.length<4)continue;
+
+      // Build array: skip hidden cells (class="hidden")
+      const vals=[];
+      let hasHidden=false;
+      for(const cell of cells){
+        const attrs=cell[1]||'';
+        const content=(cell[2]||'').replace(/<[^>]+>/g,'').replace(/&nbsp;/g,' ').trim();
+        if(/class\s*=\s*["']hidden["']/i.test(attrs)){hasHidden=true;continue;}
+        vals.push(content);
+      }
+
+      // After skipping hidden: Time(0) Position(1) Symbol(2) Type(3) Volume(4) EntryPrice(5) SL(6) TP(7) CloseTime(8) ClosePrice(9) Commission(10) Swap(11) Profit(12)
+      if(vals.length<8)continue;
+
+      const openTime=vals[0]||'';
+      const ticket=vals[1]||'';
+      const symbol=(vals[2]||'').toUpperCase().trim();
+      const typeRaw=(vals[3]||'').toLowerCase().trim();
+
+      // Skip non-trade rows
+      if(!symbol||!typeRaw)continue;
+      if(typeRaw==='type'||typeRaw==='balance'||typeRaw==='deposit'||typeRaw==='withdrawal'||typeRaw==='credit')continue;
+      if(!/buy|sell/.test(typeRaw))continue;
+
+      // Skip duplicates
+      if(ticket&&existingTickets.has(ticket))continue;
+
+      const vol=parseFloat(vals[4])||0;
+      const entry=parseFloat(vals[5])||0;
+      const sl=parseFloat(vals[6])||null;
+      const tp=parseFloat(vals[7])||null;
+      const closeTime=vals[8]||'';
+      const closePrice=parseFloat(vals[9])||null;
+      const commission=parseFloat(vals[10])||0;
+      const swap=parseFloat(vals[11])||0;
+      const profit=parseFloat(vals[12]);
+
+      const direction=typeRaw.includes('buy')?'long':'short';
+      const date=parseDate(openTime)||new Date().toISOString().slice(0,10);
+      const pnl=isNaN(profit)?null:parseFloat((profit+commission+swap).toFixed(2));
+      const status=closePrice?((pnl||0)>=0?'win':'loss'):'open';
+      const assetType=guessAssetType(symbol);
+
+      trades.push({
+        id:Date.now()+Math.random(),symbol,date,direction,
+        type:assetType,entry,exit:closePrice||null,
+        sl:sl&&sl!==0?sl:null,tp:tp&&tp!==0?tp:null,
+        size:vol,pnl,strategy:'',emotion:'',
+        notes:`Commission: ${commission}, Swap: ${swap}`,
+        status,img:null,source:'mt5',ticket
+      });
+    }
+    return trades;
+  }
+
+  // ── CSV path (standard MT5 text export) ──
+  const lines=text.split('\n').map(l=>l.trim()).filter(l=>l.length);
   let headerIdx=-1;
   for(let i=0;i<lines.length;i++){
     const l=lines[i].toLowerCase();
-    if((l.includes('symbol')&&l.includes('type')&&l.includes('profit'))||(l.includes('time')&&l.includes('volume')&&l.includes('price'))){headerIdx=i;break;}
+    if(l.includes('symbol')&&l.includes('type')&&(l.includes('profit')||l.includes('price'))){headerIdx=i;break;}
   }
-  const delim=lines[0].includes('\t')?'\t':',';
+  const delim=lines[0]&&lines[0].includes('\t')?'\t':',';
   const header=headerIdx>=0?splitCSV(lines[headerIdx],delim).map(h=>h.toLowerCase().trim()):[];
-  const col=(names)=>{for(const n of names){const i=header.findIndex(h=>h.includes(n));if(i>=0)return i;}return -1;};
+  const col=(names)=>{for(const n of names){const i=header.findIndex(h=>h.includes(n));if(i>=0)return i;}return-1;};
   const iSymbol=col(['symbol']);const iType=col(['type']);const iVol=col(['volume','qty']);
   const iPrice=col(['price']);const iClosePrice=col(['close price','price (close)','close']);
-  const iProfit=col(['profit']);const iTime=col(['time']);const iCloseTime=col(['close time','time (close)']);
+  const iProfit=col(['profit']);const iTime=col(['time']);
   const iSl=col(['s/l','sl','stop']);const iTp=col(['t/p','tp','take']);
   const iComment=col(['comment']);const iTicket=col(['position','ticket','deal']);
-
-  const existingTickets=new Set(curTrades().filter(t=>t.ticket).map(t=>t.ticket));
   const start=headerIdx>=0?headerIdx+1:0;
   for(let i=start;i<lines.length;i++){
     const row=splitCSV(lines[i],delim);
     if(row.length<4)continue;
     const typeRaw=(iType>=0?row[iType]:'').toLowerCase().trim();
     if(!typeRaw||typeRaw==='type'||typeRaw==='balance'||typeRaw==='credit'||typeRaw==='deposit'||typeRaw==='withdrawal')continue;
+    if(!/buy|sell/.test(typeRaw))continue;
     const ticket=iTicket>=0?row[iTicket].trim():'';
     if(ticket&&existingTickets.has(ticket))continue;
-    const symbol=iSymbol>=0?row[iSymbol].trim():'UNKNOWN';
+    const symbol=(iSymbol>=0?row[iSymbol].trim():'UNKNOWN').toUpperCase();
     const direction=typeRaw.includes('buy')?'long':'short';
     const entry=parseFloat(iPrice>=0?row[iPrice]:0)||0;
     const exitP=parseFloat(iClosePrice>=0?row[iClosePrice]:0)||null;
@@ -678,8 +759,7 @@ function parseMT5(text){
     const sl=parseFloat(iSl>=0?row[iSl]:0)||null;
     const tp=parseFloat(iTp>=0?row[iTp]:0)||null;
     const status=exitP?((pnl||0)>=0?'win':'loss'):'open';
-    const type=guessAssetType(symbol);
-    trades.push({id:Date.now()+Math.random(),symbol:symbol.toUpperCase(),date,direction,type,entry,exit:exitP,sl:sl||null,tp:tp||null,size:vol,pnl:isNaN(pnl)?null:parseFloat(pnl.toFixed(2)),strategy:'',emotion:'',notes:iComment>=0?row[iComment].trim():'',status,img:null,source:'mt5',ticket});
+    trades.push({id:Date.now()+Math.random(),symbol,date,direction,type:guessAssetType(symbol),entry,exit:exitP,sl:sl||null,tp:tp||null,size:vol,pnl:isNaN(pnl)?null:parseFloat(pnl.toFixed(2)),strategy:'',emotion:'',notes:iComment>=0?row[iComment].trim():'',status,img:null,source:'mt5',ticket});
   }
   return trades;
 }
