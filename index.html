@@ -270,6 +270,9 @@ tbody tr:hover td{background:var(--bg2);cursor:pointer}
       <div class="import-tabs">
         <button class="import-tab active" onclick="switchImportTab('mt5',this)"><i class="ti ti-brand-metatrader" style="font-size:14px"></i> MetaTrader 5</button>
         <button class="import-tab" onclick="switchImportTab('bybit',this)"><i class="ti ti-currency-bitcoin" style="font-size:14px"></i> Bybit</button>
+        <button class="import-tab" onclick="switchImportTab('mockcapital',this)"><i class="ti ti-building-bank" style="font-size:14px"></i> MockCapital</button>
+        <button class="import-tab" onclick="switchImportTab('breakout',this)"><i class="ti ti-rocket" style="font-size:14px"></i> Breakout Prop</button>
+        <button class="import-tab" onclick="switchImportTab('universal',this)"><i class="ti ti-settings-2" style="font-size:14px"></i> Universal</button>
       </div>
 
       <!-- MT5 PANEL -->
@@ -331,6 +334,91 @@ tbody tr:hover td{background:var(--bg2);cursor:pointer}
           </div>
         </div>
       </div>
+
+      <!-- MOCKCAPITAL PANEL -->
+      <div class="import-panel" id="panel-mockcapital">
+        <div class="broker-card">
+          <div class="broker-logo">
+            <div class="broker-icon" style="background:#6C3BDB">MC</div>
+            <div><div class="broker-name">MockCapital</div><div class="broker-sub">MatchTrader / DXtrade / MT5 platform export</div></div>
+          </div>
+          <div style="background:var(--pbg);border-radius:var(--r);padding:12px 14px;margin-bottom:14px;font-size:13px;color:var(--ptxt);line-height:1.6">
+            <strong>MockCapital uses MT5, MatchTrader, or DXtrade</strong> as the underlying trading platform. Export your trade history from whichever platform your account runs on, then drop it below.
+          </div>
+          <ul class="step-list">
+            <li><span class="step-num-sm">1</span><span><strong>MT5 accounts:</strong> Open MT5 → Ctrl+T → History tab → right-click → Save as Report → HTM. Use the MT5 tab instead.</span></li>
+            <li><span class="step-num-sm">2</span><span><strong>MatchTrader accounts:</strong> Log into your MatchTrader dashboard → History → Closed Positions → Export CSV</span></li>
+            <li><span class="step-num-sm">3</span><span><strong>DXtrade accounts:</strong> Log into DXtrade → Account → Trade History → select date range → Download CSV</span></li>
+            <li><span class="step-num-sm">4</span><span>If columns aren't recognised automatically, use the <strong>Universal tab</strong> to map them manually</span></li>
+          </ul>
+          <div class="file-drop-area" id="mockcapital-drop" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')" ondrop="handleFileDrop(event,'mockcapital')">
+            <input type="file" accept=".csv,.htm,.html" onchange="handleFileSelect(event,'mockcapital')">
+            <i class="ti ti-file-spreadsheet" style="font-size:28px;color:var(--text3);display:block;margin-bottom:8px"></i>
+            <div style="font-size:13px;color:var(--text2);font-weight:500">Drop MockCapital export file here or click to browse</div>
+            <div style="font-size:11px;color:var(--text3);margin-top:4px">Supports MT5 HTM, MatchTrader CSV, DXtrade CSV</div>
+          </div>
+          <div class="import-result" id="mockcapital-result"></div>
+        </div>
+        <div class="card" style="background:var(--pbg);border-color:transparent;margin-bottom:0">
+          <div style="font-size:12px;color:var(--ptxt);line-height:1.7">
+            <strong>Columns auto-detected for:</strong> MatchTrader (Symbol, Type, Volume, Open Price, Close Price, Open Time, Close Time, Profit, Commission, Swap) and DXtrade (instrument, side, qty, openPrice, closePrice, openTime, closeTime, realizedPnL).<br>
+            If your file isn't recognised, switch to the <strong>Universal tab</strong> to map columns manually.
+          </div>
+        </div>
+      </div>
+
+      <!-- BREAKOUT PROP PANEL -->
+      <div class="import-panel" id="panel-breakout">
+        <div class="broker-card">
+          <div class="broker-logo">
+            <div class="broker-icon" style="background:#FF6B00">BP</div>
+            <div><div class="broker-name">Breakout Prop</div><div class="broker-sub">Crypto-only prop firm — Kraken-backed</div></div>
+          </div>
+          <div style="background:var(--abg);border-radius:var(--r);padding:12px 14px;margin-bottom:14px;font-size:13px;color:var(--atxt);line-height:1.6">
+            <strong>Breakout runs a proprietary trading terminal</strong> (the Breakout Terminal). There is no official CSV export button, but you can get your trade data via the steps below.
+          </div>
+          <ul class="step-list">
+            <li><span class="step-num-sm">1</span><span>Log into your Breakout account at <strong>breakoutprop.com</strong></span></li>
+            <li><span class="step-num-sm">2</span><span>Go to <strong>Trade History</strong> or <strong>Account → History</strong> in the dashboard</span></li>
+            <li><span class="step-num-sm">3</span><span>Look for a <strong>Download</strong>, <strong>Export</strong>, or <strong>CSV</strong> button. If available, download and drop below.</span></li>
+            <li><span class="step-num-sm">4</span><span>If no export button: right-click the trade table → <strong>Select All</strong> → Copy → paste into a new Numbers or Excel file → save as CSV → drop below</span></li>
+            <li><span class="step-num-sm">5</span><span>Alternatively use the <strong>Universal tab</strong> and map your columns manually for any format</span></li>
+          </ul>
+          <div class="file-drop-area" id="breakout-drop" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')" ondrop="handleFileDrop(event,'breakout')">
+            <input type="file" accept=".csv,.htm,.html" onchange="handleFileSelect(event,'breakout')">
+            <i class="ti ti-file-spreadsheet" style="font-size:28px;color:var(--text3);display:block;margin-bottom:8px"></i>
+            <div style="font-size:13px;color:var(--text2);font-weight:500">Drop Breakout Prop CSV here or click to browse</div>
+            <div style="font-size:11px;color:var(--text3);margin-top:4px">Any CSV with trade data — unmapped columns go to Universal mapper</div>
+          </div>
+          <div class="import-result" id="breakout-result"></div>
+        </div>
+        <div class="card" style="background:var(--abg);border-color:transparent;margin-bottom:0">
+          <div style="font-size:12px;color:var(--atxt);line-height:1.7">
+            <strong>Breakout columns auto-detected:</strong> Symbol/Pair, Side (Buy/Sell/Long/Short), Entry Price, Exit/Close Price, PnL/Profit, Size/Qty, Open Time/Date.<br>
+            Since Breakout is crypto-only, all imported trades are tagged as <strong>Crypto</strong> automatically.
+          </div>
+        </div>
+      </div>
+
+      <!-- UNIVERSAL MAPPER PANEL -->
+      <div class="import-panel" id="panel-universal">
+        <div class="broker-card">
+          <div class="broker-logo">
+            <div class="broker-icon" style="background:var(--text2)"><i class="ti ti-settings-2" style="font-size:18px"></i></div>
+            <div><div class="broker-name">Universal CSV Importer</div><div class="broker-sub">Map any CSV columns to your journal fields</div></div>
+          </div>
+          <p style="font-size:13px;color:var(--text2);margin-bottom:14px;line-height:1.6">Upload any CSV from any platform. Once uploaded, map each column to the correct field and click Import. Your mapping is remembered for next time.</p>
+          <div class="file-drop-area" id="universal-drop" ondragover="event.preventDefault();this.classList.add('drag')" ondragleave="this.classList.remove('drag')" ondrop="handleFileDrop(event,'universal')">
+            <input type="file" accept=".csv" onchange="handleFileSelect(event,'universal')">
+            <i class="ti ti-table-import" style="font-size:28px;color:var(--text3);display:block;margin-bottom:8px"></i>
+            <div style="font-size:13px;color:var(--text2);font-weight:500">Drop any CSV file here to start mapping</div>
+            <div style="font-size:11px;color:var(--text3);margin-top:4px">Works with any broker or prop firm</div>
+          </div>
+          <div id="universal-mapper" style="display:none;margin-top:16px"></div>
+          <div class="import-result" id="universal-result"></div>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -820,6 +908,9 @@ function parseCSV(file,broker){
       let imported=[];
       if(broker==='mt5') imported=parseMT5(text);
       else if(broker==='bybit') imported=parseBybit(text);
+      else if(broker==='mockcapital') imported=parseMockCapital(text);
+      else if(broker==='breakout') imported=parseBreakout(text);
+      else if(broker==='universal'){showUniversalMapper(text);return;}
       const result=mergeImported(imported,broker);
       showImportResult(broker,result);
       persist();renderAll();
@@ -1036,6 +1127,215 @@ function guessAssetType(symbol){
   if(/BTC|ETH|BNB|SOL|USDT|DOGE|ADA|XRP/.test(s))return'Crypto';
   return'Stocks';
 }
+// ── MockCapital Parser ────────────────────────
+// Supports MatchTrader CSV and DXtrade CSV exports
+// MatchTrader: Symbol, Type/Side, Volume, Open Price, Close Price, Open Time, Close Time, Profit, Commission, Swap
+// DXtrade:     instrument, side, qty, openPrice, closePrice, openTime, closeTime, realizedPnL
+function parseMockCapital(text){
+  // Try MT5 HTML first (many MockCapital accounts run on MT5)
+  if(text.includes('<table')||text.includes('<TABLE')) return parseMT5(text);
+  const trades=[];
+  const lines=text.split('\n').map(l=>l.trim()).filter(l=>l.length);
+  if(!lines.length) return trades;
+  const delim=lines[0].includes('\t')?'\t':',';
+  let headerIdx=-1;
+  for(let i=0;i<Math.min(5,lines.length);i++){
+    const l=lines[i].toLowerCase();
+    if(l.includes('symbol')||l.includes('instrument')) {headerIdx=i;break;}
+  }
+  if(headerIdx<0) return trades;
+  const header=splitCSV(lines[headerIdx],delim).map(h=>h.toLowerCase().replace(/['"]/g,'').trim());
+  const col=(names)=>{for(const n of names){const i=header.findIndex(h=>h.includes(n));if(i>=0)return i;}return-1;};
+  const iSym=col(['symbol','instrument','pair']);
+  const iType=col(['type','side','direction']);
+  const iVol=col(['volume','qty','size','lots']);
+  const iEntry=col(['open price','openprice','entry price','entryprice','open']);
+  const iClose=col(['close price','closeprice','exit price','exitprice']);
+  const iProfit=col(['profit','realized','pnl','p&l']);
+  const iComm=col(['commission','comm','fee']);
+  const iSwap=col(['swap']);
+  const iTime=col(['open time','opentime','open date','date','time']);
+  const iCloseTime=col(['close time','closetime','close date']);
+  for(let i=headerIdx+1;i<lines.length;i++){
+    const row=splitCSV(lines[i],delim).map(c=>c.replace(/^["']|["']$/g,'').trim());
+    if(row.length<3||!row[iSym>=0?iSym:0]) continue;
+    const symbol=(iSym>=0?row[iSym]:'').toUpperCase().trim();if(!symbol)continue;
+    const typeRaw=(iType>=0?row[iType]:'').toLowerCase().trim();
+    const direction=typeRaw.includes('sell')||typeRaw.includes('short')?'short':'long';
+    const entry=parseFloat(iEntry>=0?row[iEntry]:0)||0;
+    const exitP=parseFloat(iClose>=0?row[iClose]:0)||null;
+    const profit=parseFloat(iProfit>=0?row[iProfit]:0);
+    const comm=parseFloat(iComm>=0?row[iComm]:0)||0;
+    const swap=parseFloat(iSwap>=0?row[iSwap]:0)||0;
+    const vol=parseFloat(iVol>=0?row[iVol]:1)||1;
+    const date=parseDate(iTime>=0?row[iTime]:'')||new Date().toISOString().slice(0,10);
+    const pnl=isNaN(profit)?null:parseFloat(profit.toFixed(2));
+    const status=exitP?((pnl||0)>=0?'win':'loss'):'open';
+    trades.push({id:Date.now()+Math.random(),symbol,date,direction,type:guessAssetType(symbol),
+      entry,exit:exitP,sl:null,tp:null,size:vol,pnl,strategy:'',emotion:'',
+      notes:comm||swap?`Comm: ${comm}, Swap: ${swap}`:'',status,img:null,source:'mockcapital'});
+  }
+  return trades;
+}
+
+// ── Breakout Prop Parser ──────────────────────
+// Breakout is crypto-only. Tries to detect their export format.
+// Common columns: Symbol/Pair, Side, Entry Price, Exit Price, PnL, Size, Opened At / Closed At
+function parseBreakout(text){
+  // Falls back to MT5 if HTML
+  if(text.includes('<table')||text.includes('<TABLE')) return parseMT5(text);
+  const trades=[];
+  const lines=text.split('\n').map(l=>l.trim()).filter(l=>l.length);
+  if(!lines.length) return trades;
+  const delim=lines[0].includes('\t')?'\t':',';
+  let headerIdx=-1;
+  for(let i=0;i<Math.min(5,lines.length);i++){
+    const l=lines[i].toLowerCase();
+    if((l.includes('symbol')||l.includes('pair')||l.includes('market'))&&(l.includes('side')||l.includes('direction')||l.includes('type'))){headerIdx=i;break;}
+    if(l.includes('entry')&&l.includes('exit')){headerIdx=i;break;}
+  }
+  if(headerIdx<0){
+    // Try first line as header anyway
+    headerIdx=0;
+  }
+  const header=splitCSV(lines[headerIdx],delim).map(h=>h.toLowerCase().replace(/['"]/g,'').trim());
+  const col=(names)=>{for(const n of names){const i=header.findIndex(h=>h.includes(n));if(i>=0)return i;}return-1;};
+  const iSym=col(['symbol','pair','market','instrument','contract']);
+  const iSide=col(['side','direction','type','action']);
+  const iEntry=col(['entry price','entry','open price','avg entry']);
+  const iExit=col(['exit price','exit','close price','avg exit']);
+  const iPnl=col(['pnl','profit','realized','net profit','gain/loss']);
+  const iSize=col(['size','qty','quantity','amount','contracts']);
+  const iTime=col(['opened','open time','date','time','entry time','created']);
+  for(let i=headerIdx+1;i<lines.length;i++){
+    const row=splitCSV(lines[i],delim).map(c=>c.replace(/^["']|["']$/g,'').trim());
+    if(row.length<3) continue;
+    const symbol=(iSym>=0?row[iSym]:'').toUpperCase().trim();if(!symbol)continue;
+    const sideRaw=(iSide>=0?row[iSide]:'').toLowerCase();
+    const direction=sideRaw.includes('sell')||sideRaw.includes('short')?'short':'long';
+    const entry=parseFloat(iEntry>=0?row[iEntry]:0)||0;
+    const exitP=parseFloat(iExit>=0?row[iExit]:0)||null;
+    const pnl=parseFloat(iPnl>=0?row[iPnl]:0);
+    const size=parseFloat(iSize>=0?row[iSize]:1)||1;
+    const date=parseDate(iTime>=0?row[iTime]:'')||new Date().toISOString().slice(0,10);
+    const status=exitP?((pnl||0)>=0?'win':'loss'):'open';
+    trades.push({id:Date.now()+Math.random(),symbol,date,direction,
+      type:'Crypto',entry,exit:exitP,sl:null,tp:null,size,
+      pnl:isNaN(pnl)?null:parseFloat(pnl.toFixed(2)),
+      strategy:'',emotion:'',notes:'',status,img:null,source:'breakout'});
+  }
+  return trades;
+}
+
+// ── Universal CSV Column Mapper ───────────────
+let universalRawText='';
+let universalHeaders=[];
+let universalRows=[];
+
+function showUniversalMapper(text){
+  universalRawText=text;
+  const lines=text.split('\n').map(l=>l.trim()).filter(l=>l.length);
+  const delim=lines[0]&&lines[0].includes('\t')?'\t':',';
+  universalHeaders=splitCSV(lines[0],delim).map(h=>h.replace(/^["']|["']$/g,'').trim());
+  universalRows=lines.slice(1,4).map(l=>splitCSV(l,delim).map(c=>c.replace(/^["']|["']$/g,'').trim()));
+  const el=document.getElementById('universal-mapper');
+  if(!el)return;
+  el.style.display='block';
+  // Fields to map
+  const fields=[
+    {key:'symbol',label:'Symbol / Pair',required:true},
+    {key:'date',label:'Open date / time',required:true},
+    {key:'direction',label:'Direction (buy/sell/long/short)',required:true},
+    {key:'entry',label:'Entry price',required:false},
+    {key:'exit',label:'Exit price',required:false},
+    {key:'pnl',label:'P&L / Profit',required:false},
+    {key:'size',label:'Size / Volume / Qty',required:false},
+    {key:'sl',label:'Stop loss',required:false},
+    {key:'tp',label:'Take profit',required:false},
+    {key:'type',label:'Asset type (Forex/Crypto etc)',required:false},
+    {key:'strategy',label:'Strategy / Setup',required:false},
+  ];
+  // Load saved mapping
+  let saved={};
+  try{saved=JSON.parse(localStorage.getItem('universal_mapping')||'{}');}catch(e){}
+  const opts=['(skip)',...universalHeaders].map((h,i)=>`<option value="${i-1}">${h}</option>`).join('');
+  const previewRows=universalRows.slice(0,2).map(r=>`<tr>${r.map(c=>`<td style="padding:4px 8px;font-size:11px;border:0.5px solid var(--border);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${c}</td>`).join('')}</tr>`).join('');
+  el.innerHTML=`
+    <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text3);margin-bottom:10px">Preview (first 2 rows)</div>
+    <div style="overflow-x:auto;margin-bottom:18px"><table style="border-collapse:collapse;font-size:12px">
+      <thead><tr>${universalHeaders.map(h=>`<th style="padding:4px 8px;background:var(--bg2);border:0.5px solid var(--border);font-size:11px;white-space:nowrap">${h}</th>`).join('')}</tr></thead>
+      <tbody>${previewRows}</tbody>
+    </table></div>
+    <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text3);margin-bottom:10px">Map columns to fields</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
+      ${fields.map(f=>`
+        <div style="display:flex;flex-direction:column;gap:4px">
+          <label style="font-size:11px;color:var(--text2);font-weight:600">${f.label}${f.required?' <span style=color:var(--red)>*</span>':''}</label>
+          <select class="fs" id="umap-${f.key}" style="font-size:12px;padding:5px 8px">
+            ${['(skip)',...universalHeaders].map((h,i)=>{
+              const idx=i-1;
+              const isSaved=saved[f.key]===idx;
+              // auto-detect
+              const auto=universalHeaders.findIndex(hh=>hh.toLowerCase().includes(f.key.replace('_',' '))||
+                (f.key==='symbol'&&/symbol|pair|market/i.test(hh))||
+                (f.key==='date'&&/time|date|open/i.test(hh))||
+                (f.key==='direction'&&/side|type|direction/i.test(hh))||
+                (f.key==='entry'&&/entry|open.?price/i.test(hh))||
+                (f.key==='exit'&&/exit|close.?price/i.test(hh))||
+                (f.key==='pnl'&&/profit|pnl|p&l|realized/i.test(hh))||
+                (f.key==='size'&&/volume|qty|size|lot/i.test(hh))||
+                (f.key==='sl'&&/stop|s\/l/i.test(hh))||
+                (f.key==='tp'&&/take|t\/p/i.test(hh))
+              );
+              const sel=(isSaved&&saved[f.key]===idx)||(!isSaved&&auto===idx)?'selected':'';
+              return`<option value="${idx}" ${sel}>${h}</option>`;
+            }).join('')}
+          </select>
+        </div>`).join('')}
+    </div>
+    <div style="display:flex;gap:10px;align-items:center">
+      <button class="btn btn-green" onclick="runUniversalImport()"><i class="ti ti-download"></i> Import trades</button>
+      <span style="font-size:12px;color:var(--text3)">Mapping is saved automatically for next time</span>
+    </div>`;
+}
+
+function runUniversalImport(){
+  const lines=universalRawText.split('\n').map(l=>l.trim()).filter(l=>l.length);
+  const delim=lines[0]&&lines[0].includes('\t')?'\t':',';
+  const mapping={};
+  ['symbol','date','direction','entry','exit','pnl','size','sl','tp','type','strategy'].forEach(k=>{
+    mapping[k]=parseInt(document.getElementById('umap-'+k)?.value??'-1');
+  });
+  try{localStorage.setItem('universal_mapping',JSON.stringify(mapping));}catch(e){}
+  const trades=[];
+  for(let i=1;i<lines.length;i++){
+    const row=splitCSV(lines[i],delim).map(c=>c.replace(/^["']|["']$/g,'').trim());
+    if(row.length<2)continue;
+    const g=(k)=>mapping[k]>=0?row[mapping[k]]||'':'';
+    const symbol=g('symbol').toUpperCase().trim();if(!symbol)continue;
+    const typeRaw=g('direction').toLowerCase();
+    const direction=typeRaw.includes('sell')||typeRaw.includes('short')?'short':'long';
+    const entry=parseFloat(g('entry'))||0;
+    const exitP=parseFloat(g('exit'))||null;
+    const pnl=parseFloat(g('pnl'));
+    const size=parseFloat(g('size'))||1;
+    const date=parseDate(g('date'))||new Date().toISOString().slice(0,10);
+    const sl=parseFloat(g('sl'))||null;
+    const tp=parseFloat(g('tp'))||null;
+    const assetType=g('type')||guessAssetType(symbol);
+    const strategy=g('strategy')||'';
+    const status=exitP?((pnl||0)>=0?'win':'loss'):'open';
+    trades.push({id:Date.now()+Math.random(),symbol,date,direction,type:assetType,
+      entry,exit:exitP,sl,tp,size,pnl:isNaN(pnl)?null:parseFloat(pnl.toFixed(2)),
+      strategy,emotion:'',notes:'',status,img:null,source:'universal'});
+  }
+  const result=mergeImported(trades,'universal');
+  const el=document.getElementById('universal-result');
+  if(result.added>0){el.className='import-result success';el.innerHTML=`<i class="ti ti-circle-check"></i> Imported <strong>${result.added}</strong> trades successfully.`;}
+  else{el.className='import-result error';el.textContent='No trades found. Check your column mapping — Symbol and Direction are required.';}
+  persist();renderAll();
+}
+
 function mergeImported(trades,source){
   if(!DB.trades[currentAccountId])DB.trades[currentAccountId]=[];
   let added=0,skipped=0;
@@ -1045,9 +1345,10 @@ function mergeImported(trades,source){
   return{added,skipped,source};
 }
 function showImportResult(broker,result){
-  const el=document.getElementById(broker+'-result');
+  const el=document.getElementById(broker+'-result');if(!el)return;
+  const names={mt5:'MetaTrader 5',bybit:'Bybit',mockcapital:'MockCapital',breakout:'Breakout Prop',universal:'Universal'};
   if(result.error){el.className='import-result error';el.textContent='Error: '+result.error;}
-  else{el.className='import-result success';el.innerHTML=`<i class="ti ti-circle-check"></i> Successfully imported <strong>${result.added}</strong> trades from ${result.source==='mt5'?'MetaTrader 5':'Bybit'}${result.skipped?` (${result.skipped} duplicates skipped)`:''}.`;}
+  else{el.className='import-result success';el.innerHTML=`<i class="ti ti-circle-check"></i> Imported <strong>${result.added}</strong> trades from ${names[result.source]||result.source}${result.skipped?` (${result.skipped} duplicates skipped)`:''}.`;}
 }
 
 // ── Trade modal ────────────────────────────────
