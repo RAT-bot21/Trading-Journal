@@ -104,14 +104,41 @@ tbody tr:hover td{background:var(--bg2);cursor:pointer}
 .ntag{display:inline-block;padding:1px 7px;border-radius:100px;font-size:10px;font-weight:600;margin-top:4px}
 .ntag-setup{background:var(--abg);color:var(--atxt)}.ntag-rule{background:var(--bbg);color:var(--btxt)}
 .ntag-review{background:var(--gbg);color:var(--gtxt)}.ntag-psych{background:var(--rbg);color:var(--rtxt)}.ntag-research{background:var(--pbg);color:var(--ptxt)}
-.notes-editor{display:flex;flex-direction:column;padding:24px}
-.ne-title{font-size:20px;font-weight:700;border:none;background:none;color:var(--text);font-family:inherit;width:100%;outline:none;margin-bottom:10px}
-.ne-meta{display:flex;gap:10px;align-items:center;margin-bottom:16px;padding-bottom:14px;border-bottom:0.5px solid var(--border);flex-wrap:wrap}
-.ne-body{flex:1;border:none;background:none;color:var(--text);font-family:inherit;font-size:14px;line-height:1.85;resize:none;outline:none;width:100%;min-height:380px}
-.ne-body::placeholder{color:var(--text3)}
-.notes-empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:var(--text3);text-align:center}
+.notes-editor{display:flex;flex-direction:column;height:100%}
+.ne-title{font-size:20px;font-weight:700;border:none;background:none;color:var(--text);font-family:inherit;width:100%;outline:none}
+.ne-meta{display:flex;gap:10px;align-items:center;padding:14px 20px;border-bottom:0.5px solid var(--border);flex-wrap:wrap;flex-shrink:0}
+.ne-toolbar{display:flex;align-items:center;gap:2px;padding:8px 20px;border-bottom:0.5px solid var(--border);flex-wrap:wrap;flex-shrink:0;background:var(--bg2)}
+.ne-toolbar-group{display:flex;align-items:center;gap:1px;margin-right:6px;padding-right:6px;border-right:0.5px solid var(--border2)}
+.ne-toolbar-group:last-child{border-right:none;margin-right:0;padding-right:0}
+.tb{background:none;border:none;cursor:pointer;padding:5px 7px;border-radius:5px;font-size:14px;color:var(--text2);line-height:1;transition:background .1s,color .1s;font-family:inherit;display:flex;align-items:center;justify-content:center}
+.tb:hover{background:var(--border);color:var(--text)}
+.tb.active{background:var(--green);color:#fff}
+.tb-label{font-size:11px;font-weight:700;padding:4px 7px}
+.ne-title-wrap{padding:16px 20px 10px;flex-shrink:0;border-bottom:0.5px solid var(--border)}
+.ne-body{flex:1;padding:18px 20px;color:var(--text);font-family:inherit;font-size:14px;line-height:1.85;outline:none;overflow-y:auto;min-height:300px}
+.ne-body:empty:before{content:attr(data-placeholder);color:var(--text3);pointer-events:none}
+.ne-body h1{font-size:22px;font-weight:700;margin:14px 0 8px;color:var(--text)}
+.ne-body h2{font-size:18px;font-weight:600;margin:12px 0 6px;color:var(--text)}
+.ne-body h3{font-size:15px;font-weight:600;margin:10px 0 5px;color:var(--text)}
+.ne-body ul,.ne-body ol{margin:6px 0 6px 22px;padding:0}
+.ne-body li{margin:3px 0}
+.ne-body a{color:var(--blue);text-decoration:underline}
+.ne-body blockquote{border-left:3px solid var(--green);margin:8px 0;padding:4px 12px;color:var(--text2);background:var(--bg2);border-radius:0 4px 4px 0}
+.ne-body table{border-collapse:collapse;width:100%;margin:10px 0;font-size:13px}
+.ne-body table td,.ne-body table th{border:1px solid var(--border2);padding:7px 10px;min-width:60px}
+.ne-body table th{background:var(--bg2);font-weight:600}
+.ne-body table tr:nth-child(even) td{background:var(--bg2)}
+.ne-body hr{border:none;border-top:1px solid var(--border);margin:12px 0}
+.ne-body pre{background:var(--bg2);border-radius:var(--r);padding:10px 14px;font-family:'SF Mono',monospace;font-size:12px;overflow-x:auto;margin:8px 0}
+.color-picker-wrap{position:relative}
+.color-picker-wrap input[type=color]{position:absolute;opacity:0;width:100%;height:100%;cursor:pointer;top:0;left:0}
+.notes-empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:var(--text3);text-align:center;padding:40px}
 .notes-empty-state i{font-size:40px;margin-bottom:12px}
 .sidebar-hdr{display:flex;align-items:center;justify-content:space-between;padding:12px 12px 8px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text3)}
+/* Table insert modal */
+.tbl-grid{display:grid;gap:3px;width:fit-content}
+.tbl-cell{width:22px;height:22px;border:1px solid var(--border2);border-radius:3px;cursor:pointer;transition:background .1s}
+.tbl-cell:hover,.tbl-cell.sel{background:var(--green);border-color:var(--green)}
 /* Cloud */
 .cloud-step{display:flex;gap:14px;align-items:flex-start;margin-bottom:14px}
 .snum{width:24px;height:24px;border-radius:50%;background:var(--green);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;margin-top:1px}
@@ -138,6 +165,10 @@ tbody tr:hover td{background:var(--bg2);cursor:pointer}
 .import-result.success{background:var(--gbg);color:var(--gtxt);display:block}
 .import-result.error{background:var(--rbg);color:var(--rtxt);display:block}
 .acct-list-item{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border:0.5px solid var(--border);border-radius:var(--r);margin-bottom:8px}
+.dash-acct-card{background:var(--bg);border-radius:var(--rl);padding:14px 16px;cursor:pointer;transition:border-color .15s;position:relative;overflow:hidden;border:1.5px solid var(--border)}
+.dash-acct-card:hover{box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.pill-btn{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:100px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid var(--border2);background:transparent;color:var(--text2);font-family:inherit;transition:all .15s}
+.pill-btn:hover{border-color:var(--green);color:var(--green)}
 @media(max-width:700px){
   .mg{grid-template-columns:repeat(2,1fr)}.crow{grid-template-columns:1fr}
   .fg{grid-template-columns:1fr}.fgrp.full{grid-column:span 1}
@@ -177,11 +208,26 @@ tbody tr:hover td{background:var(--bg2);cursor:pointer}
 
   <!-- DASHBOARD -->
   <div class="view active" id="view-dashboard">
+    <div id="dash-acct-cards" style="display:grid;gap:10px;margin-bottom:16px"></div>
+    <div class="shdr" style="margin-bottom:12px">
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+        <span class="stitle" id="dash-view-label">All accounts</span>
+        <div id="dash-acct-filter" style="display:flex;gap:6px;flex-wrap:wrap"></div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <select class="fs" id="dash-result-filter" style="width:auto;font-size:12px;padding:5px 10px" onchange="renderDash()">
+          <option value="all">All results</option><option value="win">Wins only</option><option value="loss">Losses only</option><option value="open">Open only</option>
+        </select>
+        <select class="fs" id="dash-period-filter" style="width:auto;font-size:12px;padding:5px 10px" onchange="renderDash()">
+          <option value="all">All time</option><option value="7">Last 7 days</option><option value="30">Last 30 days</option><option value="90">Last 90 days</option>
+        </select>
+      </div>
+    </div>
     <div class="mg" id="dash-metrics"></div>
-    <div class="card"><div class="card-title">Cumulative P&L</div><div style="position:relative;height:200px"><canvas id="pnlChart" role="img" aria-label="Cumulative P&L"></canvas></div></div>
+    <div class="card"><div class="card-title" id="dash-chart-title">Cumulative P&amp;L</div><div style="position:relative;height:200px"><canvas id="pnlChart" role="img" aria-label="Cumulative P&amp;L"></canvas></div></div>
     <div class="card" style="padding:0;overflow:hidden">
       <div style="padding:14px 18px 0" class="shdr">
-        <span class="stitle">Recent trades</span>
+        <span class="stitle" id="dash-recent-label">Recent trades</span>
         <button class="btn btn-sm" onclick="sw('trades',document.querySelectorAll('.nb')[1])">View all</button>
       </div>
       <div class="tw" id="dash-recent"></div>
@@ -532,16 +578,158 @@ function removeAccount(id){
 }
 
 // ── Render ─────────────────────────────────────
+let dashAcctFilter='all'; // 'all' or an account id
+
 function renderAll(){renderDash();renderTradeTable('all-trades',curTrades());renderAnalytics();renderNotesFolders();renderNotesList();}
+
+function getDashTrades(){
+  // Get trades for the current dash account filter
+  let trades=[];
+  if(dashAcctFilter==='all'){
+    DB.accounts.forEach(a=>{ (DB.trades[a.id]||[]).forEach(t=>trades.push({...t,_acctId:a.id,_acctName:a.name,_acctColor:a.color})); });
+  } else {
+    trades=(DB.trades[dashAcctFilter]||[]).map(t=>({...t,_acctId:dashAcctFilter}));
+  }
+  // Apply period filter
+  const period=document.getElementById('dash-period-filter')?document.getElementById('dash-period-filter').value:'all';
+  if(period!=='all'){
+    const cutoff=new Date();cutoff.setDate(cutoff.getDate()-parseInt(period));
+    const cutoffStr=cutoff.toISOString().slice(0,10);
+    trades=trades.filter(t=>t.date>=cutoffStr);
+  }
+  // Apply result filter
+  const res=document.getElementById('dash-result-filter')?document.getElementById('dash-result-filter').value:'all';
+  if(res!=='all') trades=trades.filter(t=>t.status===res);
+  return trades;
+}
+
 function renderDash(){
-  const s=stats();
+  renderAcctFilterPills();
+  renderAcctSummaryCards();
+  const trades=getDashTrades();
+  const s=stats(trades);
+  const acct=dashAcctFilter==='all'?null:DB.accounts.find(a=>a.id===dashAcctFilter);
+  const label=acct?acct.name:'All accounts';
+  if(document.getElementById('dash-view-label')) document.getElementById('dash-view-label').textContent=label;
+  if(document.getElementById('dash-chart-title')) document.getElementById('dash-chart-title').textContent='Cumulative P&L — '+label;
+  if(document.getElementById('dash-recent-label')) document.getElementById('dash-recent-label').textContent='Recent trades — '+label;
   document.getElementById('dash-metrics').innerHTML=`
     <div class="metric"><div class="mlabel">Total P&L</div><div class="mval ${s.pnl>=0?'g':'r'}">${s.pnl>=0?'+':''}$${Math.abs(s.pnl).toFixed(0)}</div><div class="msub">${s.total} closed trades</div></div>
     <div class="metric"><div class="mlabel">Win rate</div><div class="mval">${s.wr.toFixed(1)}%</div><div class="msub">of closed trades</div></div>
     <div class="metric"><div class="mlabel">Profit factor</div><div class="mval ${s.pf>=1?'g':'r'}">${s.pf.toFixed(2)}</div><div class="msub">avg win ÷ avg loss</div></div>
     <div class="metric"><div class="mlabel">Open positions</div><div class="mval">${s.open}</div><div class="msub">active</div></div>`;
-  renderTradeTable('dash-recent',[...curTrades()].sort((a,b)=>b.date.localeCompare(a.date)).slice(0,5));
-  renderPnLChart();
+  const recent=[...trades].sort((a,b)=>b.date.localeCompare(a.date)).slice(0,8);
+  renderDashTradeTable(recent);
+  renderPnLChartForTrades(trades, acct?acct.color:null);
+}
+
+function renderAcctFilterPills(){
+  const el=document.getElementById('dash-acct-filter');if(!el)return;
+  const pills=[{id:'all',name:'All',color:'var(--text3)'},...DB.accounts.map(a=>({id:a.id,name:a.name,color:a.color}))];
+  el.innerHTML=pills.map(p=>`
+    <button onclick="setDashAcctFilter('${p.id}')" style="
+      display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:100px;
+      font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid ${dashAcctFilter===p.id?p.color:'var(--border2)'};
+      background:${dashAcctFilter===p.id?p.color+'22':'transparent'};color:${dashAcctFilter===p.id?p.color:'var(--text2)'};
+      font-family:inherit;transition:all .15s
+    ">${p.id!=='all'?`<span style="width:7px;height:7px;border-radius:50%;background:${p.color};display:inline-block"></span>`:''} ${p.name}</button>
+  `).join('');
+}
+
+function setDashAcctFilter(id){
+  dashAcctFilter=id;
+  // Also switch the current account context so Log Trade works correctly
+  if(id!=='all') currentAccountId=id;
+  renderAcctSwitcher();
+  renderDash();
+}
+
+function renderAcctSummaryCards(){
+  const el=document.getElementById('dash-acct-cards');if(!el)return;
+  if(dashAcctFilter!=='all'){el.style.display='none';return;}
+  el.style.display='grid';
+  el.style.gridTemplateColumns=`repeat(${Math.min(DB.accounts.length,4)},1fr)`;
+  el.innerHTML=DB.accounts.map(a=>{
+    const tl=DB.trades[a.id]||[];
+    const s=stats(tl);
+    const pnlSign=s.pnl>=0?'+':'';
+    return`<div onclick="setDashAcctFilter('${a.id}')" style="
+      background:var(--bg);border:1.5px solid ${a.color}33;border-radius:var(--rl);
+      padding:14px 16px;cursor:pointer;transition:border-color .15s;position:relative;overflow:hidden
+    " onmouseover="this.style.borderColor='${a.color}'" onmouseout="this.style.borderColor='${a.color}33'">
+      <div style="position:absolute;top:0;left:0;right:0;height:3px;background:${a.color}"></div>
+      <div style="display:flex;align-items:center;gap:7px;margin-bottom:10px">
+        <span style="width:9px;height:9px;border-radius:50%;background:${a.color};display:inline-block;flex-shrink:0"></span>
+        <span style="font-size:12px;font-weight:700;color:var(--text)">${a.name}</span>
+        <span style="font-size:11px;color:var(--text3);margin-left:auto">${a.broker||''}</span>
+      </div>
+      <div style="font-size:22px;font-weight:700;color:${s.pnl>=0?'var(--green)':'var(--red)'};margin-bottom:4px">${pnlSign}$${Math.abs(s.pnl).toFixed(0)}</div>
+      <div style="display:flex;gap:14px;font-size:11px;color:var(--text3)">
+        <span>WR <strong style="color:var(--text2)">${s.wr.toFixed(0)}%</strong></span>
+        <span>Trades <strong style="color:var(--text2)">${s.total}</strong></span>
+        <span>Open <strong style="color:var(--text2)">${s.open}</strong></span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderDashTradeTable(list){
+  const el=document.getElementById('dash-recent');if(!el)return;
+  if(!list.length){el.innerHTML='<div class="empty"><i class="ti ti-file-off"></i>No trades match this filter.</div>';return;}
+  // Show account column only in all-accounts view
+  const showAcct=dashAcctFilter==='all';
+  const acctCol=showAcct?'<th>Account</th>':'';
+  const rows=list.map(t=>{
+    const dir=t.direction==='long'?'<span class="tag tl">Long</span>':'<span class="tag ts">Short</span>';
+    const res=t.status==='win'?'<span class="tag tw2">Win</span>':t.status==='loss'?'<span class="tag tlo">Loss</span>':'<span class="tag top">Open</span>';
+    const pnl=t.pnl!=null?`<span class="${t.pnl>=0?'pp':'pn'}">${t.pnl>=0?'+':''}$${t.pnl.toFixed(0)}</span>`:'<span style="color:var(--text3)">—</span>';
+    const acctCell=showAcct&&t._acctColor?`<td><span style="display:inline-flex;align-items:center;gap:4px;font-size:11px;color:var(--text2)"><span style="width:7px;height:7px;border-radius:50%;background:${t._acctColor};display:inline-block"></span>${t._acctName||''}</span></td>`:'';
+    const imgIcon=t.img?`<img src="${t.img}" class="thumb" onclick="event.stopPropagation();viewImg(${t.id})" title="View chart">`:'';
+    return`<tr onclick="currentAccountId='${t._acctId||currentAccountId}';editTrade(${t.id})">
+      <td style="font-weight:700">${t.symbol}</td><td style="color:var(--text2)">${t.date}</td>
+      <td>${dir}</td><td style="color:var(--text3);font-size:12px">${t.type}</td>
+      <td>$${t.entry}</td><td>${t.exit?'$'+t.exit:'<span style="color:var(--text3)">—</span>'}</td>
+      <td>${pnl}</td><td>${res}</td>
+      <td style="color:var(--text2);font-size:12px">${t.strategy||'—'}</td>
+      ${acctCell}<td>${imgIcon}</td>
+    </tr>`;
+  }).join('');
+  el.innerHTML=`<table><thead><tr><th>Symbol</th><th>Date</th><th>Dir</th><th>Type</th><th>Entry</th><th>Exit</th><th>P&L</th><th>Result</th><th>Strategy</th>${acctCol}<th>Chart</th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+
+function renderPnLChartForTrades(trades, color){
+  dc('pnl');
+  const sorted=[...trades].filter(t=>t.pnl!=null&&t.status!=='open').sort((a,b)=>a.date.localeCompare(b.date));
+  let cum=0;
+  const labels=sorted.map(t=>t.date.slice(5));
+  const data=sorted.map(t=>{cum+=t.pnl;return parseFloat(cum.toFixed(2));});
+  const ctx=document.getElementById('pnlChart');if(!ctx)return;
+  // Multi-account: build datasets per account when showing all
+  if(!color&&dashAcctFilter==='all'&&DB.accounts.length>1){
+    const datasets=DB.accounts.map(a=>{
+      const acctTrades=[...(DB.trades[a.id]||[])].filter(t=>t.pnl!=null&&t.status!=='open').sort((a,b)=>a.date.localeCompare(b.date));
+      let c2=0;
+      const d2=acctTrades.map(t=>{c2+=t.pnl;return parseFloat(c2.toFixed(2));});
+      return{label:a.name,data:d2,borderColor:a.color,backgroundColor:'transparent',tension:.35,pointRadius:3,pointBackgroundColor:a.color,
+        // map to matching labels
+        _dates:acctTrades.map(t=>t.date.slice(5))
+      };
+    });
+    // Build unified label set
+    const allDates=[...new Set(sorted.map(t=>t.date.slice(5)))].sort();
+    const finalDatasets=DB.accounts.map((a,i)=>{
+      const acctTrades=[...(DB.trades[a.id]||[])].filter(t=>t.pnl!=null&&t.status!=='open').sort((x,y)=>x.date.localeCompare(y.date));
+      let cum3=0;const byDate={};
+      acctTrades.forEach(t=>{cum3+=t.pnl;byDate[t.date.slice(5)]=parseFloat(cum3.toFixed(2));});
+      let last=0;
+      const d3=allDates.map(dl=>{if(byDate[dl]!==undefined)last=byDate[dl];return last;});
+      return{label:a.name,data:d3,borderColor:a.color,backgroundColor:'transparent',tension:.35,pointRadius:3,borderWidth:2};
+    });
+    charts.pnl=new Chart(ctx,{type:'line',data:{labels:allDates,datasets:finalDatasets},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:true,position:'bottom',labels:{font:{size:11},boxWidth:12}}},scales:{x:{grid:{display:false}},y:{ticks:{callback:v=>'$'+v}}}}});
+    return;
+  }
+  const col=color||curAcct().color||'#1D9E75';
+  charts.pnl=new Chart(ctx,{type:'line',data:{labels,datasets:[{label:'Cum P&L',data,borderColor:col,backgroundColor:col+'18',fill:true,tension:.35,pointRadius:4,pointBackgroundColor:col}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false}},y:{ticks:{callback:v=>'$'+v}}}}});
 }
 function srcBadge(src){
   if(src==='mt5')return'<span class="tag" style="background:var(--bbg);color:var(--btxt);font-size:10px">MT5</span>';
@@ -576,14 +764,8 @@ function filterTrades(v){
 
 // ── Charts ─────────────────────────────────────
 function dc(k){if(charts[k]){charts[k].destroy();delete charts[k];}}
-function renderPnLChart(){
-  dc('pnl');
-  const sorted=[...curTrades()].filter(t=>t.pnl!=null&&t.status!=='open').sort((a,b)=>a.date.localeCompare(b.date));
-  let cum=0;const labels=sorted.map(t=>t.date.slice(5));const data=sorted.map(t=>{cum+=t.pnl;return parseFloat(cum.toFixed(2));});
-  const ctx=document.getElementById('pnlChart');if(!ctx)return;
-  const col=curAcct().color||'#1D9E75';
-  charts.pnl=new Chart(ctx,{type:'line',data:{labels,datasets:[{label:'Cum P&L',data,borderColor:col,backgroundColor:col+'18',fill:true,tension:.35,pointRadius:4,pointBackgroundColor:col}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false}},y:{ticks:{callback:v=>'$'+v}}}}});
-}
+// renderPnLChart replaced by renderPnLChartForTrades
+
 function renderAnalytics(){
   const s=stats();
   document.getElementById('analytics-metrics').innerHTML=`
@@ -937,27 +1119,260 @@ function renderNotesList(){
 }
 function selectNote(id){activeNoteId=id;const n=DB.notes.items.find(x=>x.id===id);renderNotesList();renderNoteEditor(n);}
 function renderNoteEditor(n){
+  const folders=DB.notes.folders.map(f=>`<option value="${f.id}"${f.id===n.folderId?' selected':''}>${f.name}</option>`).join('');
+  const tagOpts=['setup','rule','review','psych','research'].map(t=>`<option value="${t}"${n.tag===t?' selected':''}>${{setup:'Setup',rule:'Rules',review:'Review',psych:'Psychology',research:'Research'}[t]}</option>`).join('');
   document.getElementById('note-editor').innerHTML=`
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:8px">
-      <input class="ne-title" id="ne-title" value="${esc(n.title)}" placeholder="Note title…" oninput="updateNote()">
+  <div class="ne-title-wrap">
+    <div style="display:flex;align-items:center;gap:8px">
+      <input class="ne-title" id="ne-title" value="${esc(n.title)}" placeholder="Note title…" oninput="updateNoteTitle()">
       <button class="btn btn-sm btn-red" onclick="deleteNote('${n.id}')"><i class="ti ti-trash"></i></button>
     </div>
-    <div class="ne-meta">
-      <select class="fs" style="width:auto;font-size:12px;padding:5px 10px" id="ne-tag" onchange="updateNote()">
-        <option value="setup"${n.tag==='setup'?' selected':''}>Setup</option><option value="rule"${n.tag==='rule'?' selected':''}>Rules</option>
-        <option value="review"${n.tag==='review'?' selected':''}>Review</option><option value="psych"${n.tag==='psych'?' selected':''}>Psychology</option><option value="research"${n.tag==='research'?' selected':''}>Research</option>
+  </div>
+  <div class="ne-meta">
+    <select class="fs" style="width:auto;font-size:12px;padding:5px 10px" id="ne-tag" onchange="updateNoteMeta()">${tagOpts}</select>
+    <select class="fs" style="width:auto;font-size:12px;padding:5px 10px" id="ne-folder" onchange="moveNote()">${folders}</select>
+    <span style="font-size:11px;color:var(--text3);margin-left:auto">${n.date}</span>
+  </div>
+  <div class="ne-toolbar">
+    <div class="ne-toolbar-group">
+      <select class="fs" id="tb-heading" style="font-size:12px;padding:3px 6px;width:auto" onchange="applyHeading(this.value)">
+        <option value="div">Normal</option><option value="h1">Heading 1</option><option value="h2">Heading 2</option><option value="h3">Heading 3</option>
       </select>
-      <select class="fs" style="width:auto;font-size:12px;padding:5px 10px" id="ne-folder" onchange="moveNote()">
-        ${DB.notes.folders.map(f=>`<option value="${f.id}"${f.id===n.folderId?' selected':''}>${f.name}</option>`).join('')}
-      </select>
-      <span style="font-size:11px;color:var(--text3)">${n.date}</span>
     </div>
-    <textarea class="ne-body" id="ne-body" placeholder="Write your notes… paste NotebookLM summaries, research, rules, or weekly reviews." oninput="updateNote()">${esc(n.body)}</textarea>`;
+    <div class="ne-toolbar-group">
+      <button class="tb" onclick="fmt('bold')" title="Bold (Cmd+B)"><i class="ti ti-bold"></i></button>
+      <button class="tb" onclick="fmt('italic')" title="Italic (Cmd+I)"><i class="ti ti-italic"></i></button>
+      <button class="tb" onclick="fmt('underline')" title="Underline (Cmd+U)"><i class="ti ti-underline"></i></button>
+      <button class="tb" onclick="fmt('strikeThrough')" title="Strikethrough"><i class="ti ti-strikethrough"></i></button>
+    </div>
+    <div class="ne-toolbar-group">
+      <span class="tb color-picker-wrap" title="Text colour"><i class="ti ti-letter-a" style="font-size:13px"></i><input type="color" id="tb-color" value="#e24b4a" onchange="applyColor(this.value)" oninput="applyColor(this.value)"></span>
+      <span class="tb color-picker-wrap" title="Highlight"><i class="ti ti-highlight" style="font-size:13px"></i><input type="color" id="tb-highlight" value="#fff59d" onchange="applyHighlight(this.value)" oninput="applyHighlight(this.value)"></span>
+    </div>
+    <div class="ne-toolbar-group">
+      <button class="tb" onclick="fmt('insertUnorderedList')" title="Bullet list"><i class="ti ti-list"></i></button>
+      <button class="tb" onclick="fmt('insertOrderedList')" title="Numbered list"><i class="ti ti-list-numbers"></i></button>
+      <button class="tb" onclick="fmt('formatBlock','blockquote')" title="Quote"><i class="ti ti-blockquote"></i></button>
+    </div>
+    <div class="ne-toolbar-group">
+      <button class="tb" onclick="fmt('justifyLeft')" title="Align left"><i class="ti ti-align-left"></i></button>
+      <button class="tb" onclick="fmt('justifyCenter')" title="Align center"><i class="ti ti-align-center"></i></button>
+      <button class="tb" onclick="fmt('justifyRight')" title="Align right"><i class="ti ti-align-right"></i></button>
+    </div>
+    <div class="ne-toolbar-group">
+      <button class="tb" onclick="insertTable()" title="Insert table"><i class="ti ti-table"></i></button>
+      <button class="tb" onclick="insertLink()" title="Insert link"><i class="ti ti-link"></i></button>
+      <button class="tb" onclick="insertHR()" title="Divider"><i class="ti ti-minus"></i></button>
+    </div>
+    <div class="ne-toolbar-group">
+      <button class="tb" onclick="document.execCommand('undo')" title="Undo (Cmd+Z)"><i class="ti ti-arrow-back-up"></i></button>
+      <button class="tb" onclick="document.execCommand('redo')" title="Redo (Cmd+Shift+Z)"><i class="ti ti-arrow-forward-up"></i></button>
+    </div>
+  </div>
+  <div class="ne-body" id="ne-body" contenteditable="true"
+    data-placeholder="Write your notes… paste from NotebookLM, add tables, format freely."
+    oninput="updateNoteBody()"
+    onkeydown="handleEditorKey(event)"
+    onpaste="handlePaste(event)">${n.body||''}</div>`;
+  // attach keyboard shortcuts
+  setTimeout(()=>{
+    const body=document.getElementById('ne-body');
+    if(body){body.focus();updateToolbarState();}
+  },50);
 }
-function updateNote(){const n=DB.notes.items.find(x=>x.id===activeNoteId);if(!n)return;n.title=document.getElementById('ne-title').value;n.tag=document.getElementById('ne-tag').value;n.body=document.getElementById('ne-body').value;n.date=new Date().toISOString().slice(0,10);persist();renderNotesList();}
-function moveNote(){const n=DB.notes.items.find(x=>x.id===activeNoteId);if(!n)return;n.folderId=document.getElementById('ne-folder').value;activeFolder=n.folderId;persist();renderNotesFolders();renderNotesList();}
-function newNote(){if(!activeFolder){alert('Select a folder first.');return;}const n={id:'n'+Date.now(),folderId:activeFolder,title:'',tag:'rule',date:new Date().toISOString().slice(0,10),body:''};DB.notes.items.unshift(n);activeNoteId=n.id;persist();renderNotesList();renderNoteEditor(n);setTimeout(()=>{const el=document.getElementById('ne-title');if(el)el.focus();},50);}
-function deleteNote(id){if(!confirm('Delete this note?'))return;DB.notes.items=DB.notes.items.filter(n=>n.id!==id);activeNoteId=null;persist();renderNotesList();document.getElementById('note-editor').innerHTML=`<div class="notes-empty-state"><i class="ti ti-notebook"></i><div style="font-size:14px;font-weight:600;color:var(--text2)">Note deleted</div></div>`;}
+
+function updateNoteTitle(){
+  const n=DB.notes.items.find(x=>x.id===activeNoteId);if(!n)return;
+  n.title=document.getElementById('ne-title').value;
+  n.date=new Date().toISOString().slice(0,10);
+  persist();renderNotesList();
+}
+function updateNoteMeta(){
+  const n=DB.notes.items.find(x=>x.id===activeNoteId);if(!n)return;
+  n.tag=document.getElementById('ne-tag').value;
+  persist();renderNotesList();
+}
+function updateNoteBody(){
+  const n=DB.notes.items.find(x=>x.id===activeNoteId);if(!n)return;
+  const body=document.getElementById('ne-body');if(!body)return;
+  n.body=body.innerHTML;
+  n.date=new Date().toISOString().slice(0,10);
+  persist();renderNotesList();
+  updateToolbarState();
+}
+// keep old updateNote as alias for any remaining callers
+function updateNote(){updateNoteBody();}
+
+function moveNote(){
+  const n=DB.notes.items.find(x=>x.id===activeNoteId);if(!n)return;
+  n.folderId=document.getElementById('ne-folder').value;activeFolder=n.folderId;
+  persist();renderNotesFolders();renderNotesList();
+}
+
+function newNote(){
+  if(!activeFolder){alert('Select a folder first.');return;}
+  const n={id:'n'+Date.now(),folderId:activeFolder,title:'',tag:'rule',date:new Date().toISOString().slice(0,10),body:''};
+  DB.notes.items.unshift(n);activeNoteId=n.id;persist();renderNotesList();renderNoteEditor(n);
+  setTimeout(()=>{const el=document.getElementById('ne-title');if(el)el.focus();},60);
+}
+
+function deleteNote(id){
+  if(!confirm('Delete this note?'))return;
+  DB.notes.items=DB.notes.items.filter(n=>n.id!==id);activeNoteId=null;persist();renderNotesList();
+  document.getElementById('note-editor').innerHTML=`<div class="notes-empty-state"><i class="ti ti-notebook"></i><div style="font-size:14px;font-weight:600;color:var(--text2)">Note deleted</div></div>`;
+}
+
+// ── Rich editor commands ──────────────────────
+function fmt(cmd, val){
+  document.getElementById('ne-body').focus();
+  document.execCommand(cmd, false, val||null);
+  updateNoteBody();updateToolbarState();
+}
+function applyColor(c){
+  document.getElementById('ne-body').focus();
+  document.execCommand('foreColor',false,c);
+  updateNoteBody();
+}
+function applyHighlight(c){
+  document.getElementById('ne-body').focus();
+  document.execCommand('hiliteColor',false,c);
+  updateNoteBody();
+}
+function applyHeading(tag){
+  document.getElementById('ne-body').focus();
+  if(tag==='div') document.execCommand('formatBlock',false,'div');
+  else document.execCommand('formatBlock',false,tag);
+  updateNoteBody();
+}
+
+function insertTable(){
+  // Show a small grid picker
+  const existing=document.getElementById('tbl-picker');
+  if(existing){existing.remove();return;}
+  const rows=6,cols=6;
+  let html=`<div id="tbl-picker" style="position:fixed;z-index:999;background:var(--bg);border:0.5px solid var(--border2);border-radius:var(--rl);padding:12px;box-shadow:0 8px 24px rgba(0,0,0,.15)">
+    <div style="font-size:11px;color:var(--text3);margin-bottom:8px" id="tbl-label">1 × 1 table</div>
+    <div class="tbl-grid" style="grid-template-columns:repeat(${cols},22px)">`;
+  for(let r=1;r<=rows;r++) for(let c=1;c<=cols;c++)
+    html+=`<div class="tbl-cell" data-r="${r}" data-c="${c}" onmouseover="highlightTable(${r},${c})" onclick="doInsertTable(${r},${c})"></div>`;
+  html+=`</div></div>`;
+  document.body.insertAdjacentHTML('beforeend',html);
+  // position near toolbar
+  const picker=document.getElementById('tbl-picker');
+  const tb=document.querySelector('.ne-toolbar');
+  if(tb){const rect=tb.getBoundingClientRect();picker.style.top=(rect.bottom+4)+'px';picker.style.left=(rect.left+4)+'px';}
+  document.addEventListener('click',function removePicker(e){if(!e.target.closest('#tbl-picker')&&!e.target.closest('.tb')){picker.remove();document.removeEventListener('click',removePicker);}});
+}
+
+function highlightTable(r,c){
+  document.querySelectorAll('.tbl-cell').forEach(el=>{
+    const er=parseInt(el.dataset.r),ec=parseInt(el.dataset.c);
+    el.classList.toggle('sel',er<=r&&ec<=c);
+  });
+  const lbl=document.getElementById('tbl-label');if(lbl)lbl.textContent=`${r} × ${c} table`;
+}
+
+function doInsertTable(rows,cols){
+  document.getElementById('tbl-picker')?.remove();
+  let html='<table><thead><tr>';
+  for(let c=0;c<cols;c++) html+=`<th>Header ${c+1}</th>`;
+  html+='</tr></thead><tbody>';
+  for(let r=0;r<rows-1;r++){
+    html+='<tr>';
+    for(let c=0;c<cols;c++) html+=`<td></td>`;
+    html+='</tr>';
+  }
+  html+='</tbody></table><p><br></p>';
+  document.getElementById('ne-body').focus();
+  document.execCommand('insertHTML',false,html);
+  updateNoteBody();
+}
+
+function insertLink(){
+  const url=prompt('Enter URL:','https://');
+  if(!url)return;
+  const text=prompt('Link text (leave blank to use URL):','')||url;
+  document.getElementById('ne-body').focus();
+  document.execCommand('insertHTML',false,`<a href="${url}" target="_blank">${text}</a>`);
+  updateNoteBody();
+}
+
+function insertHR(){
+  document.getElementById('ne-body').focus();
+  document.execCommand('insertHTML',false,'<hr><p><br></p>');
+  updateNoteBody();
+}
+
+function handleEditorKey(e){
+  // Tab in table cells
+  if(e.key==='Tab'){
+    e.preventDefault();
+    const sel=window.getSelection();
+    if(sel.rangeCount){
+      const node=sel.getRangeAt(0).startContainer;
+      const td=node.nodeType===3?node.parentElement.closest('td,th'):node.closest('td,th');
+      if(td){
+        const cells=[...td.closest('table').querySelectorAll('td,th')];
+        const idx=cells.indexOf(td);
+        if(idx<cells.length-1)cells[idx+1].focus();
+        else{ // add row
+          const tbl=td.closest('table');
+          const newRow=tbl.insertRow(-1);
+          for(let i=0;i<cells.length/tbl.rows.length;i++){const c=newRow.insertCell();c.contentEditable='true';}
+          newRow.cells[0].focus();
+          updateNoteBody();
+        }
+        return;
+      }
+    }
+    document.execCommand('insertHTML',false,'&nbsp;&nbsp;&nbsp;&nbsp;');
+  }
+  // Cmd/Ctrl shortcuts
+  if(e.metaKey||e.ctrlKey){
+    if(e.key==='b'){e.preventDefault();fmt('bold');}
+    else if(e.key==='i'){e.preventDefault();fmt('italic');}
+    else if(e.key==='u'){e.preventDefault();fmt('underline');}
+  }
+}
+
+function handlePaste(e){
+  // Allow HTML paste (for tables from Excel/Sheets/NotebookLM)
+  // Strip dangerous tags but keep formatting
+  const html=e.clipboardData.getData('text/html');
+  if(html){
+    e.preventDefault();
+    const clean=sanitizePaste(html);
+    document.execCommand('insertHTML',false,clean);
+    updateNoteBody();
+  }
+  // plain text falls through to default
+}
+
+function sanitizePaste(html){
+  const div=document.createElement('div');
+  div.innerHTML=html;
+  // Remove script, style, meta tags
+  div.querySelectorAll('script,style,meta,link').forEach(el=>el.remove());
+  // Remove dangerous attributes
+  div.querySelectorAll('*').forEach(el=>{
+    ['onclick','onerror','onload','onmouseover','src'].forEach(attr=>{
+      if(el.tagName!=='IMG') el.removeAttribute(attr);
+    });
+  });
+  return div.innerHTML;
+}
+
+function updateToolbarState(){
+  // Update bold/italic/underline active states
+  try{
+    ['bold','italic','underline','strikeThrough'].forEach(cmd=>{
+      // find button by title
+      const titles={bold:'Bold (Cmd+B)',italic:'Italic (Cmd+I)',underline:'Underline (Cmd+U)',strikeThrough:'Strikethrough'};
+      const btn=document.querySelector(`.tb[title="${titles[cmd]}"]`);
+      if(btn) btn.classList.toggle('active', document.queryCommandState(cmd));
+    });
+  }catch(e){}
+}
 function openFolderModal(){document.getElementById('folder-modal').classList.add('open');}
 function closeFolderModal(){document.getElementById('folder-modal').classList.remove('open');}
 function saveFolder(){const name=document.getElementById('new-folder-name').value.trim();if(!name){alert('Enter a folder name.');return;}const f={id:'f'+Date.now(),name,icon:document.getElementById('new-folder-icon').value,tag:document.getElementById('new-folder-tag').value};DB.notes.folders.push(f);document.getElementById('new-folder-name').value='';persist();renderNotesFolders();closeFolderModal();activeFolder=f.id;renderNotesList();}
