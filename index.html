@@ -649,82 +649,67 @@ function parseCSV(file,broker){
 }
 
 // ── MT5 Parser ────────────────────────────────
-// Handles both:
-// 1. MT5 HTML Report (.htm) — Mac export, UTF-16 encoded
-//    Table columns: Time | Position | Symbol | Type | [hidden] | Volume | Entry Price | S/L | T/P | Close Time | Close Price | Commission | Swap | Profit
-// 2. MT5 CSV export (standard text format)
+// Handles MT5 HTML Report (.htm) from Mac — UTF-16 LE encoded
+// Table: Time | Position | Symbol | Type | [hidden colspan] | Volume | Entry | S/L | T/P | CloseTime | ClosePrice | Commission | Swap | Profit
+// Also handles standard MT5 CSV export
 function parseMT5(text){
   const trades=[];
   const existingTickets=new Set(curTrades().filter(t=>t.ticket).map(t=>t.ticket));
 
-  // ── HTML path (htm report from Mac MT5) ──
-  const isHTML=text.trimStart().toLowerCase().startsWith('<!doctype')||text.trimStart().startsWith('<html')||text.includes('<table');
+  const isHTML=text.includes('<table')||text.includes('<TABLE');
   if(isHTML){
-    // Extract all <tr> blocks
-    const trMatches=[...text.matchAll(/<tr[^>]*>([\s\S]*?)<\/tr>/gi)];
-    for(const trMatch of trMatches){
-      const rowHTML=trMatch[1];
-      // Skip header rows (contain <th>) and summary rows
-      if(/<th/i.test(rowHTML))continue;
-      // Extract all <td> values, stripping tags
-      const cells=[...rowHTML.matchAll(/<td([^>]*)>([\s\S]*?)<\/td>/gi)];
+    // Split on </tr> — avoids complex regex backtracking on large files
+    const rows=text.split(/<\/tr>/i);
+    for(const row of rows){
+      // Only process rows with bgcolor — these are the data rows in MT5 report
+      if(!/<tr[^>]*bgcolor/i.test(row))continue;
+      // Extract all <td> cells
+      const cells=[...row.matchAll(/<td([^>]*)>([\s\S]*?)<\/td>/gi)];
       if(cells.length<4)continue;
-
-      // Build array: skip hidden cells (class="hidden")
+      // Build vals array, skipping hidden cells
       const vals=[];
-      let hasHidden=false;
       for(const cell of cells){
         const attrs=cell[1]||'';
         const content=(cell[2]||'').replace(/<[^>]+>/g,'').replace(/&nbsp;/g,' ').trim();
-        if(/class\s*=\s*["']hidden["']/i.test(attrs)){hasHidden=true;continue;}
+        if(/class\s*=\s*["']hidden["']/i.test(attrs))continue;
         vals.push(content);
       }
-
-      // After skipping hidden: Time(0) Position(1) Symbol(2) Type(3) Volume(4) EntryPrice(5) SL(6) TP(7) CloseTime(8) ClosePrice(9) Commission(10) Swap(11) Profit(12)
-      if(vals.length<8)continue;
-
+      // Need at least: time, ticket, symbol, type, vol, entry, sl, tp, closeTime, closePrice, comm, swap, profit
+      if(vals.length<10)continue;
       const openTime=vals[0]||'';
       const ticket=vals[1]||'';
       const symbol=(vals[2]||'').toUpperCase().trim();
       const typeRaw=(vals[3]||'').toLowerCase().trim();
-
-      // Skip non-trade rows
-      if(!symbol||!typeRaw)continue;
-      if(typeRaw==='type'||typeRaw==='balance'||typeRaw==='deposit'||typeRaw==='withdrawal'||typeRaw==='credit')continue;
-      if(!/buy|sell/.test(typeRaw))continue;
-
-      // Skip duplicates
+      // Must be a closed position row — type is buy or sell, and has a close price
+      if(!symbol||!/^(buy|sell)$/.test(typeRaw))continue;
+      // The close price (vals[9]) must be a valid number — filters out open order rows
+      const closePrice=parseFloat(vals[9]);
+      if(isNaN(closePrice)||closePrice===0)continue;
       if(ticket&&existingTickets.has(ticket))continue;
-
       const vol=parseFloat(vals[4])||0;
       const entry=parseFloat(vals[5])||0;
       const sl=parseFloat(vals[6])||null;
       const tp=parseFloat(vals[7])||null;
-      const closeTime=vals[8]||'';
-      const closePrice=parseFloat(vals[9])||null;
       const commission=parseFloat(vals[10])||0;
       const swap=parseFloat(vals[11])||0;
       const profit=parseFloat(vals[12]);
-
-      const direction=typeRaw.includes('buy')?'long':'short';
+      const direction=typeRaw==='buy'?'long':'short';
       const date=parseDate(openTime)||new Date().toISOString().slice(0,10);
-      const pnl=isNaN(profit)?null:parseFloat((profit+commission+swap).toFixed(2));
-      const status=closePrice?((pnl||0)>=0?'win':'loss'):'open';
-      const assetType=guessAssetType(symbol);
-
+      const pnl=isNaN(profit)?null:parseFloat(profit.toFixed(2));
+      const status=(pnl||0)>=0?'win':'loss';
       trades.push({
         id:Date.now()+Math.random(),symbol,date,direction,
-        type:assetType,entry,exit:closePrice||null,
+        type:guessAssetType(symbol),entry,exit:closePrice,
         sl:sl&&sl!==0?sl:null,tp:tp&&tp!==0?tp:null,
         size:vol,pnl,strategy:'',emotion:'',
-        notes:`Commission: ${commission}, Swap: ${swap}`,
+        notes:commission||swap?`Comm: ${commission}, Swap: ${swap}`:'',
         status,img:null,source:'mt5',ticket
       });
     }
     return trades;
   }
 
-  // ── CSV path (standard MT5 text export) ──
+  // ── CSV path ──
   const lines=text.split('\n').map(l=>l.trim()).filter(l=>l.length);
   let headerIdx=-1;
   for(let i=0;i<lines.length;i++){
@@ -744,8 +729,7 @@ function parseMT5(text){
     const row=splitCSV(lines[i],delim);
     if(row.length<4)continue;
     const typeRaw=(iType>=0?row[iType]:'').toLowerCase().trim();
-    if(!typeRaw||typeRaw==='type'||typeRaw==='balance'||typeRaw==='credit'||typeRaw==='deposit'||typeRaw==='withdrawal')continue;
-    if(!/buy|sell/.test(typeRaw))continue;
+    if(!typeRaw||!/buy|sell/.test(typeRaw))continue;
     const ticket=iTicket>=0?row[iTicket].trim():'';
     if(ticket&&existingTickets.has(ticket))continue;
     const symbol=(iSymbol>=0?row[iSymbol].trim():'UNKNOWN').toUpperCase();
@@ -754,8 +738,7 @@ function parseMT5(text){
     const exitP=parseFloat(iClosePrice>=0?row[iClosePrice]:0)||null;
     const pnl=parseFloat(iProfit>=0?row[iProfit]:0);
     const vol=parseFloat(iVol>=0?row[iVol]:0)||1;
-    const timeRaw=iTime>=0?row[iTime].trim():'';
-    const date=parseDate(timeRaw)||new Date().toISOString().slice(0,10);
+    const date=parseDate(iTime>=0?row[iTime].trim():'')||new Date().toISOString().slice(0,10);
     const sl=parseFloat(iSl>=0?row[iSl]:0)||null;
     const tp=parseFloat(iTp>=0?row[iTp]:0)||null;
     const status=exitP?((pnl||0)>=0?'win':'loss'):'open';
