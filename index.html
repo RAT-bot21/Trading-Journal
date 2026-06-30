@@ -259,6 +259,47 @@ tbody tr:hover td{background:var(--bg2);cursor:pointer}
 .rsi-dot{width:8px;height:8px;border-radius:50%;display:inline-block;flex-shrink:0}
 .rsi-live{background:#22c55e;box-shadow:0 0 6px #22c55e}
 .rsi-offline{background:var(--red)}
+/* Pre-trade checklist */
+.cl-section{margin-bottom:18px}
+.cl-section-title{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text3);margin-bottom:8px;padding-bottom:6px;border-bottom:0.5px solid var(--border)}
+.cl-section-title .cl-step-num{width:18px;height:18px;border-radius:50%;background:var(--bg2);color:var(--text2);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;flex-shrink:0}
+.cl-item{display:flex;align-items:flex-start;gap:10px;padding:8px 6px;border-radius:var(--r);cursor:pointer;transition:background .1s}
+.cl-item:hover{background:var(--bg2)}
+.cl-checkbox{width:18px;height:18px;border-radius:5px;border:1.5px solid var(--border2);flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;transition:all .15s;background:var(--bg)}
+.cl-checkbox.checked{background:var(--green);border-color:var(--green)}
+.cl-checkbox.checked i{color:#fff;font-size:12px}
+.cl-item-text{font-size:13px;color:var(--text);line-height:1.5}
+.cl-item.blocker .cl-item-text{font-weight:600}
+.cl-item-note{font-size:11px;color:var(--text3);margin-top:2px}
+.cl-stop-banner{background:var(--rbg);color:var(--rtxt);padding:10px 14px;border-radius:var(--r);font-size:12px;font-weight:600;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.cl-risk-table{width:100%;border-collapse:collapse;font-size:12px;margin-top:8px}
+.cl-risk-table th,.cl-risk-table td{padding:6px 10px;border:0.5px solid var(--border);text-align:left}
+.cl-risk-table th{background:var(--bg2);font-weight:700;color:var(--text2)}
+.cl-risk-table td{color:var(--text)}
+/* Checklist item comments */
+.cl-comment-input{width:100%;margin-top:6px;padding:6px 10px;border:0.5px solid var(--border2);border-radius:6px;font-size:12px;background:var(--bg);color:var(--text);font-family:inherit}
+.cl-comment-input:focus{outline:none;border-color:var(--green)}
+.cl-comment-input::placeholder{color:var(--text3)}
+/* Risk-on/off picker */
+.cl-roro-box{background:var(--bg2);border-radius:var(--r);padding:12px 14px;margin:10px 0}
+.cl-roro-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--text3);margin-bottom:8px}
+.cl-roro-toggle{display:flex;gap:6px;margin-bottom:10px}
+.cl-roro-btn{flex:1;padding:7px 10px;border-radius:var(--r);border:1.5px solid var(--border2);background:var(--bg);cursor:pointer;font-size:12px;font-weight:600;color:var(--text2);font-family:inherit;transition:all .15s}
+.cl-roro-btn:hover{border-color:var(--text3)}
+.cl-roro-btn.active-on{background:var(--gbg);border-color:var(--green);color:var(--gtxt)}
+.cl-roro-btn.active-off{background:var(--rbg);border-color:var(--red);color:var(--rtxt)}
+.cl-roro-btn.active-neutral{background:var(--bg3);border-color:var(--text3);color:var(--text)}
+.cl-roro-desc{font-size:12px;color:var(--text2);line-height:1.5;margin-bottom:10px}
+.cl-roro-currencies{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.cl-roro-tag{font-size:11px;font-weight:600;padding:3px 9px;border-radius:100px}
+.cl-roro-tag.favour{background:var(--gbg);color:var(--gtxt)}
+.cl-roro-tag.against{background:var(--rbg);color:var(--rtxt)}
+.cl-roro-pairs-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--text3);margin-bottom:6px}
+.cl-roro-pairs{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.cl-roro-pair-chip{background:var(--bg);border:0.5px solid var(--border2);border-radius:var(--r);padding:7px 10px;cursor:pointer;transition:border-color .15s}
+.cl-roro-pair-chip:hover{border-color:var(--green)}
+.cl-roro-pair-name{font-size:13px;font-weight:700;color:var(--text);display:block}
+.cl-roro-pair-note{font-size:10px;color:var(--text3);display:block;margin-top:1px}
 @media(max-width:700px){
   .mg{grid-template-columns:repeat(2,1fr)}.crow{grid-template-columns:1fr}
   .fg{grid-template-columns:1fr}.fgrp.full{grid-column:span 1}
@@ -306,7 +347,7 @@ tbody tr:hover td{background:var(--bg2);cursor:pointer}
       </div>
     </div>
     <button class="btn" onclick="exportData()"><i class="ti ti-upload"></i> Export</button>
-    <button class="btn btn-green" onclick="openTradeModal()"><i class="ti ti-plus"></i> Log trade</button>
+    <button class="btn btn-green" onclick="openChecklistGate()"><i class="ti ti-plus"></i> Log trade</button>
   </div>
 </div>
 
@@ -761,6 +802,44 @@ tbody tr:hover td{background:var(--bg2);cursor:pointer}
 </div>
 
 <!-- TRADE MODAL -->
+<!-- PRE-TRADE CHECKLIST GATE (CWT Method) -->
+<div class="overlay" id="checklist-modal" onclick="if(event.target===this)closeChecklistGate()">
+  <div class="modal" style="max-width:640px">
+    <div class="mhdr">
+      <span class="mtitle"><i class="ti ti-clipboard-check" style="color:var(--green);margin-right:6px"></i>Pre-trade checklist</span>
+      <button class="mclose" onclick="closeChecklistGate()"><i class="ti ti-x"></i></button>
+    </div>
+
+    <div style="margin-bottom:16px">
+      <label class="flabel" style="margin-bottom:6px;display:block">Asset class for this trade</label>
+      <select class="fs" id="cl-asset" onchange="renderChecklist()">
+        <option value="Forex">Forex (H4 → H1)</option>
+        <option value="Crypto">Crypto (H1 → M15)</option>
+        <option value="Stocks">PSX Stocks (Daily → H4)</option>
+      </select>
+    </div>
+
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;padding:10px 14px;background:var(--bg2);border-radius:var(--r)">
+      <div style="flex:1;height:6px;background:var(--border);border-radius:100px;overflow:hidden">
+        <div id="cl-progress-bar" style="height:100%;background:var(--green);width:0%;transition:width .2s"></div>
+      </div>
+      <span id="cl-progress-text" style="font-size:12px;font-weight:700;color:var(--text2);white-space:nowrap">0 / 0</span>
+    </div>
+
+    <div id="checklist-body" style="max-height:55vh;overflow-y:auto;padding-right:4px"></div>
+
+    <div id="cl-blocker-msg" style="display:none;margin-top:14px;padding:12px 14px;background:var(--rbg);color:var(--rtxt);border-radius:var(--r);font-size:13px;font-weight:600">
+      <i class="ti ti-alert-triangle"></i> <span id="cl-blocker-text"></span>
+    </div>
+
+    <div class="mfoot">
+      <button class="btn" onclick="closeChecklistGate()">Cancel</button>
+      <button class="btn" onclick="resetChecklist()"><i class="ti ti-refresh"></i> Reset</button>
+      <button class="btn btn-green" id="cl-continue-btn" onclick="passChecklistAndOpenTrade()" disabled style="opacity:.4"><i class="ti ti-arrow-right"></i> All checks passed — Log trade</button>
+    </div>
+  </div>
+</div>
+
 <div class="overlay" id="trade-modal" onclick="if(event.target===this)closeTradeModal()">
  <div class="modal">
   <div class="mhdr"><span class="mtitle" id="modal-title">Log a trade</span><button class="mclose" onclick="closeTradeModal()"><i class="ti ti-x"></i></button></div>
@@ -2677,6 +2756,340 @@ function clearRSIAlerts(){
   renderRSI();
   const url = (document.getElementById('rsi-server-input')?.value?.trim()||loadRSIServer()).replace(/\/$/,'');
   if(url) fetch(url+'/api/alerts',{method:'DELETE'}).catch(()=>{});
+}
+
+// ══════════════════════════════════════════════
+// PRE-TRADE CHECKLIST GATE (CWT Method)
+// Tailored by asset class — must pass before
+// the Log Trade modal opens.
+// ══════════════════════════════════════════════
+let clChecked = {};   // {itemId: true/false}
+let clComments = {};  // {itemId: 'comment text'}
+let clAsset = 'Forex';
+let clRiskSentiment = ''; // 'on' | 'off' | ''
+
+// Asset-specific timeframe + risk config
+const CL_CONFIG = {
+  Forex:  { htf:'H4',  ltf:'H1',  shortlistTitle:'Shortlist the pair',
+            trendRisk:'0.40%', revRisk:'0.60%', revReward:'1.80%' },
+  Crypto: { htf:'H1',  ltf:'M15', shortlistTitle:'Shortlist the coin',
+            trendRisk:'0.22%', revRisk:'0.40%', revReward:'1.20%' },
+  Stocks: { htf:'Daily', ltf:'H4', shortlistTitle:'Shortlist the stock',
+            trendRisk:'0.60%', revRisk:'1.00%', revReward:'3.00%' }
+};
+
+function clItem(id, text, opts={}){
+  const checked = !!clChecked[id];
+  const blocker = opts.blocker?' blocker':'';
+  const commentVal = clComments[id]||'';
+  const commentBox = opts.noComment ? '' : `
+    <input type="text" class="cl-comment-input" id="clcomment-${id}"
+      placeholder="Add a comment for the trade log…" value="${esc(commentVal)}"
+      onclick="event.stopPropagation()" oninput="updateCLComment('${id}',this.value)">`;
+  return `<div class="cl-item${blocker}" data-cl-id="${id}">
+    <div class="cl-checkbox${checked?' checked':''}" id="clbox-${id}" onclick="toggleCLItem('${id}')">${checked?'<i class="ti ti-check"></i>':''}</div>
+    <div style="flex:1">
+      <div class="cl-item-text" onclick="toggleCLItem('${id}')" style="cursor:pointer">${text}</div>
+      ${opts.note?`<div class="cl-item-note">${opts.note}</div>`:''}
+      ${commentBox}
+    </div>
+  </div>`;
+}
+
+function updateCLComment(id,val){
+  clComments[id]=val;
+}
+
+// ── Risk-on / Risk-off pair suggester ──────────
+const RORO_DATA = {
+  on: {
+    label: 'Risk-ON',
+    desc: 'Optimism dominates — capital flows into higher-yield, growth-linked currencies and away from safe havens.',
+    favour: ['AUD','NZD','CAD'],
+    against: ['USD','JPY','CHF'],
+    pairs: [
+      {pair:'AUD/JPY', note:'Classic risk-on barometer — buy on risk-on'},
+      {pair:'NZD/JPY', note:'Carry-trade favourite — rises with risk appetite'},
+      {pair:'AUD/USD', note:'Buy AUD side on risk-on'},
+      {pair:'NZD/USD', note:'Buy NZD side on risk-on'},
+      {pair:'AUD/CHF', note:'Risk currency vs safe haven — buy AUD side'},
+      {pair:'CAD/JPY', note:'Oil-linked CAD strengthens with risk-on flows'}
+    ]
+  },
+  off: {
+    label: 'Risk-OFF',
+    desc: 'Fear dominates — capital rushes into safe-haven currencies and away from growth-linked ones.',
+    favour: ['USD','JPY','CHF'],
+    against: ['AUD','NZD','CAD'],
+    pairs: [
+      {pair:'USD/JPY', note:'Both safe havens — watch for whichever is relatively stronger'},
+      {pair:'AUD/JPY', note:'Sell — classic risk-off short'},
+      {pair:'NZD/JPY', note:'Sell — unwinds fastest in panic'},
+      {pair:'USD/CHF', note:'Sell side favours CHF strength in extreme risk-off'},
+      {pair:'AUD/USD', note:'Sell — USD strengthens, AUD weakens'},
+      {pair:'NZD/USD', note:'Sell — NZD weakens on risk aversion'}
+    ]
+  }
+};
+
+function renderRiskSentimentPicker(){
+  const sel = clRiskSentiment;
+  const data = sel ? RORO_DATA[sel] : null;
+  let html = `<div class="cl-roro-box">
+    <div class="cl-roro-label">Today's risk sentiment</div>
+    <div class="cl-roro-toggle">
+      <button class="cl-roro-btn${sel==='on'?' active-on':''}" onclick="setRiskSentiment('on')">🟢 Risk-ON</button>
+      <button class="cl-roro-btn${sel==='off'?' active-off':''}" onclick="setRiskSentiment('off')">🔴 Risk-OFF</button>
+      <button class="cl-roro-btn${sel===''?' active-neutral':''}" onclick="setRiskSentiment('')">⚪ Unclear</button>
+    </div>`;
+
+  if(data){
+    html += `<div class="cl-roro-desc">${data.desc}</div>
+      <div class="cl-roro-currencies">
+        <span class="cl-roro-tag favour">Favour: ${data.favour.join(', ')}</span>
+        <span class="cl-roro-tag against">Avoid longs in: ${data.against.join(', ')}</span>
+      </div>
+      <div class="cl-roro-pairs-title">Suggested pairs to watch</div>
+      <div class="cl-roro-pairs">`;
+    data.pairs.forEach(p=>{
+      html += `<div class="cl-roro-pair-chip" onclick="useSuggestedPair('${p.pair}')" title="Click to use this pair">
+        <span class="cl-roro-pair-name">${p.pair}</span>
+        <span class="cl-roro-pair-note">${p.note}</span>
+      </div>`;
+    });
+    html += `</div>`;
+  } else if(sel===''){
+    html += `<div class="cl-roro-desc" style="opacity:.7">No clear sentiment — both risk and safe-haven currencies showing mixed signals. Trade setups on technicals alone, don't lean on sentiment bias today.</div>`;
+  }
+  html += `</div>`;
+  return html;
+}
+
+function setRiskSentiment(val){
+  clRiskSentiment = val;
+  renderChecklist(); // full re-render to keep state simple
+}
+
+function useSuggestedPair(pair){
+  // Stash it so it can prefill the trade form's symbol field later
+  window._clSuggestedPair = pair.replace('/','');
+  alert(`"${pair}" noted — it will pre-fill the Symbol field when you open the trade form.`);
+}
+
+function clSection(num, title, itemsHTML){
+  return `<div class="cl-section">
+    <div class="cl-section-title"><span class="cl-step-num">${num}</span>${title}</div>
+    ${itemsHTML}
+  </div>`;
+}
+
+function renderChecklist(){
+  clAsset = document.getElementById('cl-asset').value;
+  const cfg = CL_CONFIG[clAsset];
+  const body = document.getElementById('checklist-body');
+
+  let html = '';
+
+  // STEP 0
+  html += clSection(0, 'Before you open charts',
+    clItem('s0-discipline', 'Did I lose discipline yesterday (forced a trade, moved a stop, skipped a step)? If yes, I\'ve written it down before trading today.') +
+    clItem('s0-clearhead', 'I am trading with a clear head — not revenge trading, not bored, not rushing.', {blocker:true}) +
+    clItem('s0-journal', 'My journal from the last session is updated.')
+  );
+
+  // STEP 1 - News
+  let step1 = clItem('s1-forexfactory', 'Checked forexfactory.com for today\'s red-folder (high-impact) events') +
+    clItem('s1-times', 'Noted exact times of any high-impact news for my pairs/coins') +
+    clItem('s1-investing', 'Checked investing.com for general risk-on/risk-off tone');
+  if(clAsset==='Crypto') step1 += clItem('s1-crypto-news', 'Checked for project-specific or regulatory news');
+  if(clAsset==='Stocks') step1 += clItem('s1-stocks-news', 'Checked sbp.org.pk (monetary policy), pbs.gov.pk (CPI), sarmaaya.pk/announcements (board meetings/insider activity)');
+  step1 += renderRiskSentimentPicker();
+  step1 += clItem('s1-avoid', `I am avoiding entries 30-60 min around any major release today.`, {blocker:true});
+  html += clSection(1, 'News check — always first, no exceptions', step1);
+
+  // STEP 2 - Shortlist (asset-specific)
+  let step2 = '';
+  if(clAsset==='Forex'){
+    step2 = clItem('s2-heatmap', 'Checked TradingView heatmap or DXY/currency indices for directional strength') +
+            clItem('s2-candidates', 'Identified 1-3 candidate pairs showing real movement, not chop');
+  } else if(clAsset==='Crypto'){
+    step2 = clItem('s2-btc', 'Checked BTC Daily trend first — master filter (only buy setups if BTC Daily bullish, only sell setups if bearish)', {blocker:true}) +
+            clItem('s2-bybit', 'Checked Bybit Key Metrics / Opportunities page for sentiment, trending sectors, top movers/gainers') +
+            clItem('s2-candidates', 'Identified 1-3 candidate coins');
+  } else {
+    step2 = clItem('s2-kse', 'Checked KSE-100 Daily trend first', {blocker:true}) +
+            clItem('s2-volume', 'Checked Volume Leaders on platform (TradingView) OR Insider Transactions on sarmaaya.pk') +
+            clItem('s2-avoid-gainers', 'Avoided top gainers/losers lists (low volume = misleading)');
+  }
+  html += clSection(2, cfg.shortlistTitle, step2);
+
+  // STEP 3 - HTF Trend
+  html += clSection(3, `Confirm higher timeframe trend (${cfg.htf})`,
+    clItem('s3-dow', 'Dow Theory structure checked — clear HH/HL (bull) or LH/LL (bear)?') +
+    clItem('s3-alligator', 'Alligator mouth is OPEN and lines are fanned/parallel (not tangled/sleeping)') +
+    clItem('s3-stage', 'Confirmed this is Stage 2 (Advancing) or Stage 4 (Declining) — NOT Stage 1 or 3 (range-bound)', {blocker:true}) +
+    `<div class="cl-stop-banner"><i class="ti ti-hand-stop"></i> If mouth is sleeping / Stage 1 or 3 → NO TRADE, stop here.</div>`
+  );
+
+  // STEP 4 - Divergence
+  html += clSection(4, 'Check for divergence on HTF',
+    clItem('s4-rsi-zone', 'Is RSI above 70 or below 30? (Only look for divergence in these zones)') +
+    clItem('s4-bear-div', 'Price making Higher Highs while RSI makes Lower Highs? → Bearish divergence → Reversal logic') +
+    clItem('s4-bull-div', 'Price making Lower Lows while RSI makes Higher Lows? → Bullish divergence → Reversal logic') +
+    clItem('s4-no-div', 'No divergence present → Continuation logic (trade with the existing trend)') +
+    `<div class="cl-item-note" style="margin:8px 0 0 28px"><strong>If reversal:</strong> identify pattern (Double Top/Bottom, H&S, Inverse H&S, Rising/Falling Wedge) and wait for confirmed neckline/trendline break. Never enter on pattern shape alone.<br><strong>If continuation:</strong> identify pattern (Flag, Cup & Handle, Triangle, Channel) and wait for confirmed breakout in trend direction.</div>`
+  );
+
+  // STEP 5 - Scenario
+  html += clSection(5, `Pick your scenario on execution TF (${cfg.ltf})`,
+    clItem('s5-scenario1', '<strong>Scenario 1 (best):</strong> HTF and execution TF both trending same direction. Heikin Ashi candles above/below Lips, mouth open. Entry: market or stop order.') +
+    clItem('s5-scenario2', '<strong>Scenario 2 (pullback):</strong> HTF trending, execution TF pulling back. HTF FVG visible → Buy/Sell Limit inside it. No clear FVG → Buy/Sell Stop beyond the swing high/low.') +
+    clItem('s5-scenario3', '<strong>Scenario 3 (range):</strong> HTF trending, execution TF ranging. Same as Scenario 2 — Limit inside FVG at range boundary, or Stop order on breakout.') +
+    clItem('s5-no-force', 'Confirmed which scenario applies — I did NOT force a trade where none of the 3 cleanly apply', {blocker:true})
+  );
+
+  // STEP 6 - Risk
+  const riskTable = `<div class="cl-item-note" style="margin:8px 0 12px 0">
+    <strong>Risk % — Trending Scenario (RRMS table):</strong>
+    <table class="cl-risk-table"><tr><th>Market</th><th>${cfg.htf}/${cfg.ltf}</th><th>Risk % (1st attempt)</th></tr>
+    <tr><td>${clAsset}</td><td>${cfg.htf}/${cfg.ltf}</td><td><strong>${cfg.trendRisk}</strong></td></tr></table>
+    <div style="margin-top:6px">RRMS escalation if SL hits: 1st loss → 2nd attempt risk increases (per course table), always sized so a single win nets the original target %. Never skip ahead or risk more than the table specifies.</div>
+  </div>
+  <div class="cl-item-note" style="margin-bottom:10px">
+    <strong>Risk % — Reversal/Continuation Scenario (1:3 R:R table):</strong>
+    <table class="cl-risk-table"><tr><th>Market</th><th>${cfg.htf}/${cfg.ltf}</th><th>Risk %</th><th>Reward (1:3)</th></tr>
+    <tr><td>${clAsset}</td><td>${cfg.htf}/${cfg.ltf}</td><td><strong>${cfg.revRisk}</strong></td><td><strong>${cfg.revReward}</strong></td></tr></table>
+  </div>`;
+  html += clSection(6, 'Set stop loss, take profit, and position size BEFORE entering',
+    clItem('s6-sl', 'SL placed at structurally valid point (beyond Alligator Jaw / swing point / FVG boundary — never an arbitrary number)', {blocker:true}) +
+    clItem('s6-tp', 'TP/target decided BEFORE entry, not improvised after', {blocker:true}) +
+    riskTable +
+    clItem('s6-size', 'Position size calculated from SL distance and the correct risk % above — not guessed', {blocker:true})
+  );
+
+  // STEP 7 - Final go/no-go
+  let step7extra = '';
+  if(clAsset==='Forex') step7extra = clItem('s7-session', `I'm aware this candle close happened during Asian session (lower conviction) vs London/NY (higher conviction) — noted but not a hard blocker on ${cfg.htf}.`);
+  html += clSection(7, 'Final go / no-go',
+    clItem('s7-honest', 'Every step above checked off honestly (not rationalized)', {blocker:true}) +
+    clItem('s7-news', 'I am NOT entering within 30-60 min of a major news release', {blocker:true}) +
+    clItem('s7-bored', `I am NOT entering just because I'm bored or want "a trade today"`, {blocker:true}) +
+    step7extra
+  );
+
+  body.innerHTML = html;
+  updateCLProgress();
+}
+
+function toggleCLItem(id){
+  clChecked[id] = !clChecked[id];
+  const box = document.getElementById('clbox-'+id);
+  if(box){
+    box.classList.toggle('checked', clChecked[id]);
+    box.innerHTML = clChecked[id]?'<i class="ti ti-check"></i>':'';
+  }
+  updateCLProgress();
+}
+
+function updateCLProgress(){
+  const total = document.querySelectorAll('.cl-item').length;
+  const done  = Object.values(clChecked).filter(Boolean).length;
+  const pct   = total ? Math.round((done/total)*100) : 0;
+  const bar = document.getElementById('cl-progress-bar');
+  const txt = document.getElementById('cl-progress-text');
+  if(bar) bar.style.width = pct+'%';
+  if(txt) txt.textContent = `${done} / ${total}`;
+
+  // Check blockers specifically — these MUST be checked to proceed
+  const blockerEls = document.querySelectorAll('.cl-item.blocker');
+  let allBlockersOk = true;
+  blockerEls.forEach(el=>{
+    const id = el.getAttribute('data-cl-id');
+    if(id && !clChecked[id]) allBlockersOk = false;
+  });
+
+  const btn = document.getElementById('cl-continue-btn');
+  const msg = document.getElementById('cl-blocker-msg');
+  const allDone = total>0 && done===total;
+
+  if(btn){
+    btn.disabled = !allDone;
+    btn.style.opacity = allDone?'1':'.4';
+  }
+  if(msg){
+    if(!allBlockersOk && done>0){
+      msg.style.display='block';
+      document.getElementById('cl-blocker-text').textContent = 'Critical checks remaining — these gate your entry per the CWT method.';
+    } else {
+      msg.style.display='none';
+    }
+  }
+}
+
+function openChecklistGate(){
+  clChecked = {};
+  clComments = {};
+  clRiskSentiment = '';
+  window._clSuggestedPair = null;
+  document.getElementById('cl-asset').value = clAsset || 'Forex';
+  renderChecklist();
+  document.getElementById('checklist-modal').classList.add('open');
+}
+function closeChecklistGate(){
+  document.getElementById('checklist-modal').classList.remove('open');
+}
+function resetChecklist(){
+  clChecked = {};
+  clComments = {};
+  clRiskSentiment = '';
+  window._clSuggestedPair = null;
+  renderChecklist();
+}
+function buildChecklistSummary(){
+  // Compile any comments left on checklist items into a readable block for trade notes
+  const entries = Object.entries(clComments).filter(([id,val])=>val&&val.trim());
+  if(!entries.length && !clRiskSentiment) return '';
+  let out = '— Pre-trade checklist notes —\n';
+  if(clRiskSentiment){
+    out += `Sentiment: ${clRiskSentiment==='on'?'Risk-ON':'Risk-OFF'}\n`;
+  }
+  // Map ids back to readable labels where possible
+  const idLabels = {
+    's0-discipline':'Discipline check', 's0-clearhead':'Mental state', 's0-journal':'Journal updated',
+    's1-forexfactory':'ForexFactory news', 's1-times':'News timing', 's1-investing':'Investing.com tone',
+    's1-crypto-news':'Crypto news', 's1-stocks-news':'PSX news', 's1-avoid':'News avoidance',
+    's2-heatmap':'Heatmap/DXY', 's2-candidates':'Candidates shortlisted', 's2-btc':'BTC filter', 's2-bybit':'Bybit metrics',
+    's2-kse':'KSE-100 trend', 's2-volume':'Volume leaders', 's2-avoid-gainers':'Avoided gainers list',
+    's3-dow':'Dow Theory structure', 's3-alligator':'Alligator state', 's3-stage':'Stage confirmation',
+    's4-rsi-zone':'RSI zone', 's4-bear-div':'Bearish divergence', 's4-bull-div':'Bullish divergence', 's4-no-div':'No divergence',
+    's5-scenario1':'Scenario 1', 's5-scenario2':'Scenario 2', 's5-scenario3':'Scenario 3', 's5-no-force':'Scenario confirmed',
+    's6-sl':'Stop loss placement', 's6-tp':'Take profit decision', 's6-size':'Position sizing',
+    's7-honest':'Honest checklist', 's7-news':'News-free entry', 's7-bored':'Not bored entry', 's7-session':'Session awareness'
+  };
+  entries.forEach(([id,val])=>{
+    out += `${idLabels[id]||id}: ${val.trim()}\n`;
+  });
+  return out.trim();
+}
+
+function passChecklistAndOpenTrade(){
+  const summary = buildChecklistSummary();
+  document.getElementById('checklist-modal').classList.remove('open');
+  openTradeModal();
+  // Pre-fill asset type, symbol (from suggested pair), and notes from checklist
+  setTimeout(()=>{
+    const typeMap = {Forex:'Forex', Crypto:'Crypto', Stocks:'Stocks'};
+    const typeEl = document.getElementById('f-type');
+    if(typeEl) typeEl.value = typeMap[clAsset]||'Forex';
+    if(window._clSuggestedPair){
+      const symEl = document.getElementById('f-symbol');
+      if(symEl) symEl.value = window._clSuggestedPair;
+    }
+    if(summary){
+      const notesEl = document.getElementById('f-notes');
+      if(notesEl) notesEl.value = summary + (notesEl.value?('\n\n'+notesEl.value):'');
+    }
+  }, 60);
 }
 
 // ── PWA Service Worker ──────────────────────────
